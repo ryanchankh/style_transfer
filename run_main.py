@@ -15,19 +15,17 @@ import style_transfer as st
 
 print(datetime.now(), "Loading all hyperparameters. ")
 
-
+# image paths
+styl_img_file = 'style/starry_night.jpg'
+cont_img_file = 'content/mountains.jpeg'
+white_img_file = 'white_noise/plain_white.jpg'
+gen_img_file = 'gen_img/gen_img.jpeg'
 
 # hyper-parameters
-img_shape = np.array([1, 100, 100, 3]) # [batch, height, width, channels]
+img_shape = utils.optimal_dimension(cont_img_file, styl_img_file) #np.array([1, 100, 100, 3]) # [batch, height, width, channels]
 styl_loss_alpha, cont_loss_beta = 50, 0.05 # alpha/beta = 1e-3 or 1e-4
 learning_rate = 10
 num_steps = 100 # training iterations
-
-# image paths
-styl_img_file = 'style/starry_night.jpg'
-cont_img_file = 'content/tubingen.jpg'
-white_img_file = 'white_noise/plain_white.jpg'
-gen_img_file = 'gen_img/gen_img.jpeg'
 
 # turn image into numpy arrays
 print(datetime.now(), "Loading images")

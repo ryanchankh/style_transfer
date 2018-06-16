@@ -7,6 +7,15 @@ Author: Ryan Chan
 import numpy as np
 from PIL import Image
 
+def optimal_dimension(cont_img_path, styl_img_path):
+    (cont_img_width, cont_img_height) = Image.open(cont_img_path).size
+    (styl_img_width, styl_img_height) = Image.open(styl_img_path).size
+    #if styl_img_width <= cont_img_width and styl_img_width <= cont_img_height:
+    return np.array([1, cont_img_width, cont_img_width, 3])
+
+
+
+
 
 def load_image(path, shape=None):
     """
@@ -25,7 +34,7 @@ def load_image(path, shape=None):
     img_array[:, :, :, 2] -= 123.68
     img_array = img_array[:, :, :, ::-1]
     
-    print("Image loaded: ", path)
+    print("Image loaded: ", path, "with dimension", shape)
     return img_array
 
 def save_image(path, img_array):
