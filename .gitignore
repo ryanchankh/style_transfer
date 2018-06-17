@@ -1,3 +1,4 @@
 vgg19/vgg19.npy
 __pycache__/
 .ipynb_checkpoints/
+.DS_Store
