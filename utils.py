@@ -13,7 +13,7 @@ def optimal_dimension(cont_img_path, styl_img_path):
     """
 
     cont_img_width, cont_img_height = Image.open(cont_img_path).size
-    return np.array([1, cont_img_width, cont_img_width, 3])
+    return np.array([1, cont_img_width, cont_img_height, 3])
 
 def load_image(path, shape=None):
     """
