@@ -2,3 +2,6 @@ vgg19/vgg19.npy
 __pycache__/
 .ipynb_checkpoints/
 .DS_Store
+content/.DS_Store
+style/.DS_Store
+transfer_file_ssh.sh
