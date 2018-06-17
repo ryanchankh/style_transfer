@@ -1,5 +1,7 @@
 """
 Style Transfer Object
+Last Updated: 17 June 2018
+Author: Ryan Chan
 """
 
 import tensorflow as tf
