@@ -90,7 +90,7 @@ class StyleTransfer():
                 self.beta1 = tf.Variable(0.9)
                 self.beta2 = tf.Variable(0.999)
                 self.episilon = tf.Variable(1)
-                self.train_ops = tf.train.AdamOptimizer(self.learning_rate).minimize(self.total_loss,var_list=self.image)
+                self.train_ops = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(self.total_loss,var_list=self.image)
                 
             with tf.name_scope("init") as scope:
                 self.init_op = tf.global_variables_initializer()

@@ -95,7 +95,7 @@ with tf.Session(graph=model.graph) as sess:
         
     time_train_end = time.time()
     print("Training Completed.")
-    print("Training time required: ", time_model_end - time_model_start)
+    print("Training time required: ", time_train_end - time_train_start)
     
     # save result to gen_img_file
     utils.save_image(gen_img_file, gen_img)
