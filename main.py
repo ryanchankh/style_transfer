@@ -7,7 +7,6 @@ Author: Ryan Chan
 import time
 from datetime import datetime
 
-import numpy as np
 import tensorflow as tf
 from PIL import Image
 
@@ -25,9 +24,9 @@ gen_img_file = 'gen_img/gen_img.jpeg'
 
 # hyper-parameters
 img_shape = utils.optimal_dimension(cont_img_file, styl_img_file) #np.array([1, 512, 512, 3]) # [batch, height, width, channels]
-styl_loss_alpha, cont_loss_beta = 50, 5 # alpha/beta = 1e-3 or 1e-4
-learning_rate = 10
-num_steps = 100 # training iterations
+styl_loss_alpha, cont_loss_beta = 100, 7.5 # alpha/beta = 1e-3 or 1e-4
+learning_rate = 1e-3
+num_steps = 1000 # training iterations
 
 # turn image into numpy arrays
 print(datetime.now(), "Loading images")
