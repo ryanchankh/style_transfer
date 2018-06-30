@@ -14,13 +14,15 @@ import style_transfer as st
 import utils
 import vgg19.vgg as vgg
 
+current_time = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
 print(datetime.now(), "Loading all hyperparameters. ")
+str(datetime.now())
 
 # image paths
 styl_img_file = 'style/starry_night.jpg'
 cont_img_file = 'content/tubingen.jpg'
 white_img_file = 'white_noise/plain_white.jpg'
-gen_img_file = 'gen_img/gen_img.jpeg'
+gen_img_file = 'gen_img/' + current_time + '.jpeg'
 
 # hyper-parameters
 img_shape = utils.optimal_dimension(cont_img_file, styl_img_file) #np.array([1, 512, 512, 3]) # [batch, height, width, channels]
