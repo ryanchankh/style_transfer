@@ -1,6 +1,6 @@
 """
 Style Tranfser
-Last Updated: 17 June 2018
+Last Updated: 30 June 2018 
 Author: Ryan Chan
 """
 
@@ -16,7 +16,6 @@ import vgg19.vgg as vgg
 
 current_time = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
 print(datetime.now(), "Loading all hyperparameters. ")
-str(datetime.now())
 
 # image paths
 styl_img_file = 'style/starry_night.jpg'
