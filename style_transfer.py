@@ -77,20 +77,17 @@ class StyleTransfer():
                 self.cont_activity_calc = {layer_name: self.cont_layer_ops[layer_name] for layer_name in self.cont_layers}
                 self.cont_activity = {layer_name: tf.placeholder(tf.float32, shape=[1, None, None, None]) for layer_name in self.cont_layers}
 
-            with tf.variable_scope("styl_loss") as scope:
+            with tf.name_scope("styl_loss") as scope:
                 self.styl_loss = self.styl_loss()
 
-            with tf.variable_scope("cont_loss") as scope:
+            with tf.name_scope("cont_loss") as scope:
                 self.cont_loss = self.cont_loss()
 
-            with tf.variable_scope("total_loss") as scope:
+            with tf.name_scope("total_loss") as scope:
                 self.total_loss = self.styl_loss_alpha * self.styl_loss + self.cont_loss_beta * self.cont_loss
 
             with tf.name_scope("train") as scope:
-                self.beta1 = tf.Variable(0.9)
-                self.beta2 = tf.Variable(0.999)
-                self.episilon = tf.Variable(1)
-                self.train_ops = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(self.total_loss,var_list=self.image)
+                self.train_ops = tf.train.AdamOptimizer(self.learning_rate).minimize(self.total_loss,var_list=self.image)
 
             with tf.name_scope("init") as scope:
                 self.init_op = tf.global_variables_initializer()

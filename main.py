@@ -1,6 +1,6 @@
 """
 Style Tranfser
-Last Updated: 30 June 2018 
+Last Updated: 30 June 2018
 Author: Ryan Chan
 """
 
@@ -26,8 +26,8 @@ gen_img_file = 'gen_img/' + current_time + '.jpeg'
 # hyper-parameters
 img_shape = utils.optimal_dimension(cont_img_file, styl_img_file) #np.array([1, 512, 512, 3]) # [batch, height, width, channels]
 styl_loss_alpha, cont_loss_beta = 100, 7.5 # alpha/beta = 1e-3 or 1e-4
-learning_rate = 1e-3
-num_steps = 1000 # training iterations
+learning_rate = 10
+num_steps = 1 # training iterations
 
 # turn image into numpy arrays
 print(datetime.now(), "Loading images")
@@ -74,7 +74,6 @@ with tf.Session(graph=model.graph) as sess:
 
     # training
     print("Begin Training.")
-    time_train_start = time.time()
     for step in range(num_steps):
 
         # compute gradient and add to gen_img
@@ -91,11 +90,9 @@ with tf.Session(graph=model.graph) as sess:
             print("total_loss:", total_loss)
             print()
 
-            utils.save_image(gen_img_file, gen_img)
+            #utils.save_image(gen_img_file, gen_img)
 
-    time_train_end = time.time()
     print("Training Completed.")
-    print("Training time required: ", time_train_end - time_train_start)
 
     # save result to gen_img_file
     utils.save_image(gen_img_file, gen_img)
