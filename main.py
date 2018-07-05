@@ -84,11 +84,7 @@ with tf.Session(graph=model.graph) as sess:
 
         # print_step
         if step % 10 == 0:
-            print("Step: {}/{}".format(step, num_steps))
-            print("styl_loss:", styl_loss)
-            print("cont_loss:", cont_loss)
-            print("total_loss:", total_loss)
-            print()
+            print("Step: {}/{}\t\tstyle_loss: {}\t\tcont_loss: {}\t\ttotal_loss: {}".format(step, num_steps, styl_loss, cont_loss, total_loss))
 
             #utils.save_image(gen_img_file, gen_img)
 
