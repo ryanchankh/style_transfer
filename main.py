@@ -1,8 +1,8 @@
 from datetime import datetime
 import tensorflow as tf
 
-from style_transfer2 import StyleTransfer
-from utils import load_image, save_image
+from style_transfer import StyleTransfer
+import utils
 
 class OPTIONS():
 
@@ -35,11 +35,14 @@ class OPTIONS():
                     "conv4_1": 0.2, "conv4_2": 0, "conv4_3": 0.2, "conv4_4": 0, "pool4": 0,
                     "conv5_1": 0.2, "conv5_2": 0, "conv5_3": 0.2, "conv5_4": 0, "pool5": 0}
 
+    log_path = "./gen_img/"
 
+
+utils.write_log(OPTIONS.log_path, OPTIONS)
 # turn image into numpy arrays
-styl_img = load_image(OPTIONS.styl_img_path, shape=OPTIONS.img_shape)
-cont_img = load_image(OPTIONS.cont_img_path, shape=OPTIONS.img_shape)
-init_img = load_image(OPTIONS.white_img_path, shape=OPTIONS.img_shape)
+styl_img = utils.load_image(OPTIONS.styl_img_path, shape=OPTIONS.img_shape)
+cont_img = utils.load_image(OPTIONS.cont_img_path, shape=OPTIONS.img_shape)
+init_img = utils.load_image(OPTIONS.white_img_path, shape=OPTIONS.img_shape)
 
 
 model = StyleTransfer(init_img,
@@ -63,5 +66,5 @@ with tf.Session(graph=model.graph) as sess:
         if step % 10 == 0:
             print("Step: {}\tloss: {}".format(step, loss))
 
-            save_image(OPTIONS.gen_img_path, gen_img, OPTIONS.img_shape)
-    save_image(OPTIONS.gen_img_path, gen_img, OPTIONS.img_shape)
+            utils.save_image(OPTIONS.gen_img_path, gen_img, OPTIONS.img_shape)
+    utils.save_image(OPTIONS.gen_img_path, gen_img, OPTIONS.img_shape)

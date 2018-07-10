@@ -18,7 +18,7 @@ def load_image(path, shape=None):
         image = image.resize(shape)
     img_array = np.asarray(image, dtype=np.float32)
     img_array = np.expand_dims(img_array, axis=0)
-    
+
     img_array[:, :, :, 0] -= 103.939
     img_array[:, :, :, 1] -= 116.779
     img_array[:, :, :, 2] -= 123.68
@@ -43,3 +43,10 @@ def save_image(path, x, img_shape):
     print("Image saved as: ", path)
     return save_img
 
+def write_log(log_path, options):
+    file_path = log_path + options.init_time + ".txt"
+    with open(file_path , "w") as f:
+        option_dict = options.__dict__
+        for key in option_dict:
+            if key[0] != "_":
+                f.write("{}:\t\t{}".format(key, option_dict[key]))
