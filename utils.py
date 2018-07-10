@@ -7,8 +7,11 @@ Author: Ryan Chan
 import numpy as np
 from PIL import Image
 
-def optimal_dimension(cont_img_path, styl_img_path):
+def optimal_dimension(cont_img_path, styl_img_path, square=False):
     cont_img_width, cont_img_height = Image.open(cont_img_path).size
+    if square:
+        max_len = max(cont_img_width, cont_img_height)
+        return np.array([1, max_len, max_len, 3])
     return np.array([1, cont_img_width, cont_img_height, 3])
 
 def load_image(path, shape=None):
@@ -49,4 +52,4 @@ def write_log(log_path, options):
         option_dict = options.__dict__
         for key in option_dict:
             if key[0] != "_":
-                f.write("{}:\t\t{}".format(key, option_dict[key]))
+                f.write("{}:\t\t{}\n".format(key, option_dict[key]))
