@@ -1,97 +1,67 @@
-"""
-Style Tranfser
-Last Updated: 30 June 2018
-Author: Ryan Chan
-"""
-
-import time
 from datetime import datetime
-
 import tensorflow as tf
-from PIL import Image
 
-import style_transfer as st
-import utils
-import vgg19.vgg as vgg
+from style_transfer2 import StyleTransfer
+from utils import load_image, save_image
 
-current_time = datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
-print(datetime.now(), "Loading all hyperparameters. ")
+class OPTIONS():
 
-# image paths
-styl_img_file = 'style/starry_night.jpg'
-cont_img_file = 'content/tubingen.jpg'
-white_img_file = 'white_noise/plain_white.jpg'
-gen_img_file = 'gen_img/' + current_time + '.jpeg'
 
-# hyper-parameters
-img_shape = utils.optimal_dimension(cont_img_file, styl_img_file) #np.array([1, 512, 512, 3]) # [batch, height, width, channels]
-styl_loss_alpha, cont_loss_beta = 100, 7.5 # alpha/beta = 1e-3 or 1e-4
-learning_rate = 10
-num_steps = 1 # training iterations
+    init_time = datetime.now().strftime("%H%M%S_%Y%m%d")
+
+    # image paths
+    styl_img_path = './images/style/van_gough.jpg'
+    cont_img_path = './images/content/dom.jpg'
+    white_img_path = './images/others/plain_white.jpg'
+    gen_img_path = './gen_img/' + init_time + '.jpeg'
+
+    # hyper-parameters
+    #img_shape = utils.optimal_dimension(cont_img_file, styl_img_file)
+    img_shape = (1, 224, 224, 3) # [batch, height, width, channels]
+    alpha = 1           # style weight alpha
+    beta = 0.1         # content weight beta
+    total_var = 1.0     # total variation weight
+    l_rate = 10         # learning rate
+    num_steps = 100     # training iterations
+
+   # content and style layers used in style transfer
+    cont_layers = ["conv2_2"]
+    styl_layers = ["conv1_1", "conv2_1", "conv3_1", "conv4_1", "conv5_1"]
+
+    # weights on each style layer
+    styl_weights = {"conv1_1": 0.2, "conv1_2": 0.2, "pool1": 0,
+                    "conv2_1": 0.2, "conv2_2": 0, "pool2": 0,
+                    "conv3_1": 0.2, "conv3_2": 0, "conv3_3": 0.2, "conv3_4": 0, "pool3": 0,
+                    "conv4_1": 0.2, "conv4_2": 0, "conv4_3": 0.2, "conv4_4": 0, "pool4": 0,
+                    "conv5_1": 0.2, "conv5_2": 0, "conv5_3": 0.2, "conv5_4": 0, "pool5": 0}
+
 
 # turn image into numpy arrays
-print(datetime.now(), "Loading images")
-styl_img = utils.load_image(styl_img_file, shape=img_shape)
-cont_img = utils.load_image(cont_img_file, shape=img_shape)
-gen_img = utils.load_image(white_img_file, shape=img_shape)
-print("\n")
+styl_img = load_image(OPTIONS.styl_img_path, shape=OPTIONS.img_shape)
+cont_img = load_image(OPTIONS.cont_img_path, shape=OPTIONS.img_shape)
+init_img = load_image(OPTIONS.white_img_path, shape=OPTIONS.img_shape)
 
-# content and style layers used in style transfer
-cont_layers = ["conv4_2"]
-styl_layers = ["conv1_1", "conv2_1", "conv3_1", "conv4_1", "conv5_1"]
-gen_layers = cont_layers + styl_layers
 
-# weights on each style layer
-styl_layer_weights = {"conv1_1": 0.2, "conv1_2": 0, "pool1": 0,
-                      "conv2_1": 0.2, "conv2_2": 0, "pool2": 0,
-                      "conv3_1": 0.2, "conv3_2": 0, "conv3_3": 0, "conv3_4":0, "pool3": 0,
-                      "conv4_1": 0.2, "conv4_2": 0, "conv4_3":0, "conv4_4": 0, "pool4": 0,
-                      "conv5_1":0.2, "conv5_2": 0, "conv5_3": 0, "conv5_4": 0, "pool5": 0}
+model = StyleTransfer(init_img,
+                      OPTIONS.img_shape,
+                      OPTIONS.cont_layers,
+                      OPTIONS.styl_layers,
+                      OPTIONS.styl_weights,
+                      OPTIONS.alpha,
+                      OPTIONS.beta,
+                      OPTIONS.l_rate)
 
-# initialize Sytle_Transfer Model
-print(datetime.now(), "Initializing Style Transfer Model")
-time_model_start = time.time()
-model = st.StyleTransfer(gen_img,
-                         img_shape,
-                         cont_layers,
-                         styl_layers,
-                         styl_layer_weights,
-                         styl_loss_alpha,
-                         cont_loss_beta,
-                         learning_rate)
-time_model_end = time.time()
-print("Time taken: ", time_model_end - time_model_start)
 
-# begin style transfer
 with tf.Session(graph=model.graph) as sess:
 
-    # initialize variables
-    sess.run(model.init_op, feed_dict={model.cont_img:cont_img, model.styl_img:styl_img})
+    sess.run(tf.global_variables_initializer())
+    feed_dict = {model.cont_img: cont_img, model.styl_img: styl_img}
 
-    # style and content activities
-    styl_activity_calc = sess.run(model.styl_activity_calc, feed_dict={model.styl_img: styl_img})
-    cont_activity_calc = sess.run(model.cont_activity_calc, feed_dict={model.cont_img: cont_img})
+    for step in range(OPTIONS.num_steps):
+        _, gen_img, loss = sess.run([model.train, model.image, model.total_loss], feed_dict=feed_dict)
 
-    # training
-    print("Begin Training.")
-    for step in range(num_steps):
-
-        # compute gradient and add to gen_img
-        train_dict = {}
-        train_dict.update({model.styl_activity[ln]:styl_activity_calc[ln] for ln in styl_layers})
-        train_dict.update({model.cont_activity[ln]:cont_activity_calc[ln] for ln in cont_layers})
-        _, total_loss, styl_loss, cont_loss, gen_img = sess.run([model.train_ops, model.total_loss, model.styl_loss, model.cont_loss, model.image], feed_dict=train_dict)
-
-        # print_step
         if step % 10 == 0:
-            print("Step: {}/{}\t\tstyle_loss: {}\t\tcont_loss: {}\t\ttotal_loss: {}".format(step, num_steps, styl_loss, cont_loss, total_loss))
+            print("Step: {}\tloss: {}".format(step, loss))
 
-            #utils.save_image(gen_img_file, gen_img)
-
-    print("Training Completed.")
-
-    # save result to gen_img_file
-    utils.save_image(gen_img_file, gen_img)
-
-    # tensorboard graph
-    #tf.summary.FileWriter("./log", model.graph)
+            save_image(OPTIONS.gen_img_path, gen_img, OPTIONS.img_shape)
+    save_image(OPTIONS.gen_img_path, gen_img, OPTIONS.img_shape)
