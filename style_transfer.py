@@ -1,5 +1,8 @@
+import numpy as np
 import tensorflow as tf
+
 from vgg19.vgg import VGG19
+
 
 class StyleTransfer():
 
@@ -12,8 +15,9 @@ class StyleTransfer():
         self.alpha = alpha
         self.beta = beta
         self.l_rate = l_rate
-        self.graph = self.build_graph()
 
+        self.graph = self.build_graph()
+        self.step = 0
 
     def build_graph(self):
         with tf.Graph().as_default() as graph:
@@ -38,7 +42,6 @@ class StyleTransfer():
 
             with tf.name_scope("train") as scope:
                 self.train = tf.train.AdamOptimizer(self.l_rate).minimize(self.total_loss)
-
         return graph
 
     def cont_loss(self):
@@ -64,3 +67,16 @@ class StyleTransfer():
         features_shape = tf.shape(features)
         matrix = tf.reshape(features, shape=[-1, features_shape[3]])
         return tf.matmul(matrix, matrix, transpose_a = True)
+
+    def step_callback(self, logger, sess):
+        def helper(image):
+            image = np.reshape(image, newshape=self.img_shape)
+            logger.save_img_step(self.step, image, self.img_shape)
+            self.step += 1
+        return helper
+
+    def loss_callback(self):
+        def helper(*args):
+            print(*args)
+
+        return helper

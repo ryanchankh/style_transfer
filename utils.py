@@ -1,20 +1,43 @@
-"""
-Utilities.
-Date: 17 June 2018
-Author: Ryan Chan
-"""
-
+import os
 import numpy as np
 from PIL import Image
 
-def optimal_dimension(cont_img_path, styl_img_path, square=False):
+
+
+class Logger():
+    def __init__(self, options):
+        self.folder_path = options.gen_folder_path
+        self.options = options
+        self.make_folder()
+        self.write_log()
+
+    def write_log(self):
+        file_path = self.folder_path + "config.txt"
+        with open(file_path , "w") as f:
+            option_dict = self.options.__dict__
+            for key in option_dict:
+                if key[0] != "_":
+                    f.write("{}:\t\t{}\n".format(key, option_dict[key]))
+
+    def make_folder(self):
+        os.mkdir(self.folder_path)
+
+    def save_img_step(self, step, gen_img, img_shape):
+        img_path = self.folder_path + "step_" + str(step) + ".jpg"
+        save_img(img_path, gen_img, img_shape)
+
+
+
+def optimal_dimension(cont_img_path=None, styl_img_path=None, square=False):
+    if cont_img_path is None and styl_img_path is None:
+        return np.array([1, 224, 224, 3])
     cont_img_width, cont_img_height = Image.open(cont_img_path).size
     if square:
         max_len = max(cont_img_width, cont_img_height)
         return np.array([1, max_len, max_len, 3])
     return np.array([1, cont_img_width, cont_img_height, 3])
 
-def load_image(path, shape=None):
+def load_img(path, shape=None):
     image = Image.open(path)
     if shape is not None:
         shape = (shape[1], shape[2])
@@ -30,8 +53,9 @@ def load_image(path, shape=None):
     print("Image loaded: ", path, "with dimension", shape)
     return img_array
 
-def save_image(path, x, img_shape):
+def save_img(path, x, img_shape):
     img_array = np.copy(x)
+    print(img_array)
     img_array = img_array.reshape((img_shape[1], img_shape[2], 3))
 
     img_array = img_array[:, :, ::-1]
@@ -45,11 +69,3 @@ def save_image(path, x, img_shape):
     save_img.save(path)
     print("Image saved as: ", path)
     return save_img
-
-def write_log(log_path, options):
-    file_path = log_path + options.init_time + ".txt"
-    with open(file_path , "w") as f:
-        option_dict = options.__dict__
-        for key in option_dict:
-            if key[0] != "_":
-                f.write("{}:\t\t{}\n".format(key, option_dict[key]))
