@@ -18,7 +18,7 @@ class OPTIONS():
     gen_folder_path = "./gen_img/" + init_time + "/"
 
     # hyper-parameters
-    img_shape = utils.optimal_dimension(cont_img_file, styl_img_file, square=False)
+    img_shape = utils.optimal_dimension(cont_img_path, styl_img_path, square=False)
     #img_shape = utils.optimal_dimension() # [batch, height, width, channels]
     alpha = 5           # style weight alpha
     beta = 0.025         # content weight beta
