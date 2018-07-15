@@ -26,7 +26,7 @@ class OPTIONS():
     num_steps = 10     # training iterations
 
    # content and style layers used in style transfer
-    cont_layers = ["conv2_2"]
+    cont_layers = ["conv4_2"]
     styl_layers = ["conv1_1", "conv2_1", "conv3_1", "conv4_1", "conv5_1"]
 
     # weights on each style layer
@@ -45,7 +45,7 @@ styl_img = utils.load_img(OPTIONS.styl_img_path, shape=OPTIONS.img_shape)
 cont_img = utils.load_img(OPTIONS.cont_img_path, shape=OPTIONS.img_shape)
 init_img = utils.load_img(OPTIONS.white_img_path, shape=OPTIONS.img_shape)
 
-model = StyleTransfer(init_img,
+model = StyleTransfer(cont_img,
                       OPTIONS.img_shape,
                       OPTIONS.cont_layers,
                       OPTIONS.styl_layers,

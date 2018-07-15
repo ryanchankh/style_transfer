@@ -55,7 +55,6 @@ def load_img(path, shape=None):
 
 def save_img(path, x, img_shape):
     img_array = np.copy(x)
-    print(img_array)
     img_array = img_array.reshape((img_shape[1], img_shape[2], 3))
 
     img_array = img_array[:, :, ::-1]
@@ -64,7 +63,8 @@ def save_img(path, x, img_shape):
     img_array[:, :, 2] += 123.68
 
     img_array = np.clip(img_array, 0, 255).astype('uint8')
-    img_arrays = np.copy(img_array)[:, :, ::-1]
+    print(img_array)
+    img_arrays = img_array[:, :, ::-1]
     save_img = Image.fromarray(img_array)
     save_img.save(path)
     print("Image saved as: ", path)
