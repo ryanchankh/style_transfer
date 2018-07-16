@@ -70,7 +70,23 @@ def save_img(path, x, img_shape):
     return save_img
 
 def white_img(img_shape):
-    return np.ones([1, img_shape[1], img_shape[2], 3]) * 255
+    img_array = np.ones([img_shape[1], img_shape[2]]) * 255
+    img_array = np.expand_dims(img_array, axis=0)
+
+    img_array[:, :, :, 0] -= 103.939
+    img_array[:, :, :, 1] -= 116.779
+    img_array[:, :, :, 2] -= 123.68
+    img_array = img_array[:, :, :, ::-1]
+
+    return img_array
 
 def rand_img(width, height):
-    return np.random.randint(0, 255, [1, img_shape[1], img_shape[2], 3])
+    img_array =  np.random.randint(0, 255, [img_shape[1], img_shape[2]])
+    img_array = np.expand_dims(img_array, axis=0)
+
+    img_array[:, :, :, 0] -= 103.939
+    img_array[:, :, :, 1] -= 116.779
+    img_array[:, :, :, 2] -= 123.68
+    img_array = img_array[:, :, :, ::-1]
+
+    return img_array
