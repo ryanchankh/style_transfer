@@ -69,8 +69,8 @@ def save_img(path, x, img_shape):
     print("Image saved as: ", path)
     return save_img
 
-def white_img(width, height):
-    return np.ones([1, width, height, 3]) * 255
+def white_img(img_shape):
+    return np.ones([1, img_shape[1], img_shape[2], 3]) * 255
 
 def rand_img(width, height):
-    return np.random.randint(0, 255, [1, width, height, 3])
+    return np.random.randint(0, 255, [1, img_shape[1], img_shape[2], 3])
