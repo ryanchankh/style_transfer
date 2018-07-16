@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.opt import ScipyOptimizerInterface
 
@@ -18,12 +19,12 @@ class OPTIONS():
     gen_folder_path = "./gen_img/" + init_time + "/"
 
     # hyper-parameters
-    img_shape = utils.optimal_dimension(cont_img_path, styl_img_path, square=False)
-    #img_shape = utils.optimal_dimension() # [batch, height, width, channels]
+    #img_shape = utils.optimal_dimension(cont_img_path, styl_img_path, square=False)
+    img_shape = utils.optimal_dimension() # [batch, height, width, channels]
     alpha = 5           # style weight alpha
     beta = 0.025         # content weight beta
     l_rate = 10         # learning rate
-    num_steps = 10     # training iterations
+    num_steps = 20     # training iterations
 
    # content and style layers used in style transfer
     cont_layers = ["conv4_2"]
@@ -44,8 +45,10 @@ logger = utils.Logger(OPTIONS)
 styl_img = utils.load_img(OPTIONS.styl_img_path, shape=OPTIONS.img_shape)
 cont_img = utils.load_img(OPTIONS.cont_img_path, shape=OPTIONS.img_shape)
 init_img = utils.load_img(OPTIONS.white_img_path, shape=OPTIONS.img_shape)
+white_img = utils.white_img(OPTIONS.img_shape)
+rand_img = utils.rand_img(OPTIONS.img_shape)
 
-model = StyleTransfer(cont_img,
+model = StyleTransfer(rand_img,
                       OPTIONS.img_shape,
                       OPTIONS.cont_layers,
                       OPTIONS.styl_layers,
