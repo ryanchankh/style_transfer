@@ -1,9 +1,10 @@
 import os
-import tensorflow as tf
-
-import numpy as np
 import time
-import inspect
+
+import tensorflow as tf
+import numpy as np
+
+import utils
 
 class VGG19(object):
 
@@ -14,9 +15,6 @@ class VGG19(object):
         self.data_dict = np.load(path, encoding='latin1').item()
 
     def build(self, bgr, clear_data=False):
-        """
-        load variable from npy to build the VGG
-        """
         self.conv1_1 = self.conv_layer(bgr, "conv1_1")
         self.conv1_2 = self.conv_layer(self.conv1_1, "conv1_2")
         self.pool1 = self.avg_pool(self.conv1_2, 'pool1')

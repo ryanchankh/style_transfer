@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
+#from vgg19.vgg_keras import VGG19
 from vgg19.vgg import VGG19
 
 
@@ -48,7 +49,8 @@ class StyleTransfer():
         with tf.name_scope("cont_loss") as scope:
             losses = []
             for layer in self.cont_layers:
-                losses.append(tf.losses.mean_squared_error(self.gen_cont_activity[layer], self.cont_activity[layer]))
+#                losses.append(tf.losses.mean_squared_error(self.gen_cont_activity[layer], self.cont_activity[layer]))
+                losses.append(tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2)) / 2)
         return self.beta * tf.reduce_sum(losses)
 
     def styl_loss(self):
@@ -60,18 +62,22 @@ class StyleTransfer():
                 feature_map_size = img_shape[1] * img_shape[2]
                 styl_gram = self.grammian(self.styl_activity[layer])
                 gen_gram = self.grammian(self.gen_styl_activity[layer])
-                losses[layer] = tf.losses.mean_squared_error(styl_gram, gen_gram) / (2. * (channels ** 2) * (feature_map_size ** 2))
-        return self.alpha * tf.reduce_sum([self.styl_weights[l] * losses[l] for l in self.styl_layers])
+                #losses[layer] = (1. / (2. * (channels ** 2) * (feature_map_size ** 2))) * tf.losses.mean_squared_error(styl_gram, gen_gram)
+                print("losses: {}".format(losses))
+                losses[layer] = (1. / (2. * (channels ** 2) * (feature_map_size ** 2))) * tf.reduce_sum(tf.pow(styl_gram - gen_gram, 2))
+
+            return self.alpha * tf.reduce_sum([self.styl_weights[l] * losses[l] for l in self.styl_layers])
 
     def grammian(self, features):
         features_shape = tf.shape(features)
         matrix = tf.reshape(features, shape=[-1, features_shape[3]])
         return tf.matmul(matrix, matrix, transpose_a = True)
 
-    def step_callback(self, logger, sess):
+    def step_callback(self, logger, sess, save_per_step):
         def helper(image):
-            image = np.reshape(image, newshape=self.img_shape)
-            logger.save_img_step(self.step, image, self.img_shape)
+            if self.step % save_per_step == 0:
+                image = np.reshape(image, newshape=self.img_shape)
+                logger.save_img_step(self.step, image, self.img_shape)
             self.step += 1
         return helper
 

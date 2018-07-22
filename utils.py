@@ -37,31 +37,22 @@ def optimal_dimension(cont_img_path=None, styl_img_path=None, square=False):
         return np.array([1, max_len, max_len, 3])
     return np.array([1, cont_img_width, cont_img_height, 3])
 
-def load_img(path, shape=None):
+def load_img(path, shape=None, preprocess=True):
     image = Image.open(path)
     if shape is not None:
         shape = (shape[1], shape[2])
         image = image.resize(shape)
     img_array = np.asarray(image, dtype=np.float32)
     img_array = np.expand_dims(img_array, axis=0)
-
-    img_array[:, :, :, 0] -= 103.939
-    img_array[:, :, :, 1] -= 116.779
-    img_array[:, :, :, 2] -= 123.68
-    img_array = img_array[:, :, :, ::-1]
-
+    if preprocess:
+        img_array = rgb2bgr(img_array)
     print("Image loaded: ", path, "with dimension", shape)
     return img_array
 
 def save_img(path, x, img_shape):
     img_array = np.copy(x)
-    img_array = img_array.reshape((img_shape[2], img_shape[1], 3))
-
-    img_array = img_array[:, :, ::-1]
-    img_array[:, :, 0] += 103.939
-    img_array[:, :, 1] += 116.779
-    img_array[:, :, 2] += 123.68
-
+    img_array = img_array.reshape((img_shape[1], img_shape[2], 3))
+    img_array = bgr2rgb(img_array)
     img_array = np.clip(img_array, 0, 255).astype('uint8')
     print(img_array)
     save_img = Image.fromarray(img_array)
@@ -72,21 +63,21 @@ def save_img(path, x, img_shape):
 def white_img(img_shape):
     img_array = np.ones([img_shape[1], img_shape[2], 3]) * 255
     img_array = np.expand_dims(img_array, axis=0)
-
-    img_array[:, :, :, 0] -= 103.939
-    img_array[:, :, :, 1] -= 116.779
-    img_array[:, :, :, 2] -= 123.68
-    img_array = img_array[:, :, :, ::-1]
-
     return img_array
 
 def rand_img(img_shape):
-    img_array =  np.random.randint(0, 255, [img_shape[1], img_shape[2], 3]).astype(np.float32)
-    img_array = np.expand_dims(img_array, axis=0)
+    return np.random.uniform(0, 255, (1, img_shape[1], img_shape[2], 3)) - 128
 
+def rgb2bgr(img_array):
     img_array[:, :, :, 0] -= 103.939
     img_array[:, :, :, 1] -= 116.779
     img_array[:, :, :, 2] -= 123.68
     img_array = img_array[:, :, :, ::-1]
+    return img_array
 
+def bgr2rgb(img_array):
+    img_array = img_array[:, :, ::-1]
+    img_array[:, :, 0] += 103.939
+    img_array[:, :, 1] += 116.779
+    img_array[:, :, 2] += 123.68
     return img_array

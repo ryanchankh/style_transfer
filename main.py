@@ -13,18 +13,20 @@ class OPTIONS():
     init_time = datetime.now().strftime("%H%M%S_%Y%m%d")
 
     # image paths
-    styl_img_path = './images/style/starry_night.jpg'
-    cont_img_path = './images/content/tubingen.jpg'
+    styl_img_path = './images/style/wave.jpg'
+    cont_img_path = './images/content/hugo.jpg'
     white_img_path = './images/others/plain_white.jpg'
     gen_folder_path = "./gen_img/" + init_time + "/"
 
     # hyper-parameters
     #img_shape = utils.optimal_dimension(cont_img_path, styl_img_path, square=False)
-    img_shape = utils.optimal_dimension() # [batch, height, width, channels]
+    #img_shape = utils.optimal_dimension() # [batch, height, width, channels]
+    img_shape = np.array([1, 512, 512, 3])
     alpha = 5           # style weight alpha
     beta = 0.025         # content weight beta
-    l_rate = 10         # learning rate
-    num_steps = 20     # training iterations
+    l_rate = 0
+    num_steps = 10     # training iterations
+    save_per_step = 5   # save image per this number of step
 
    # content and style layers used in style transfer
     cont_layers = ["conv4_2"]
@@ -61,10 +63,12 @@ model = StyleTransfer(rand_img,
 with tf.Session(graph=model.graph) as sess:
 
     sess.run(tf.global_variables_initializer())
+    print("TRAINABLE VARIABLES")
+    print(tf.trainable_variables())
     feed_dict = {model.cont_img: cont_img, model.styl_img: styl_img}
     optimizer = ScipyOptimizerInterface(model.total_loss, options={'maxiter': OPTIONS.num_steps})
     optimizer.minimize(sess,
                        feed_dict=feed_dict,
-                       step_callback=model.step_callback(logger, sess))
+                       step_callback=model.step_callback(logger, sess, OPTIONS.save_per_step))
     gen_img = sess.run(model.image)
     utils.save_img(OPTIONS.gen_folder_path+"result.jpg", gen_img, OPTIONS.img_shape)
