@@ -54,7 +54,6 @@ def save_img(path, x, img_shape):
     img_array = img_array.reshape((img_shape[1], img_shape[2], 3))
     img_array = bgr2rgb(img_array)
     img_array = np.clip(img_array, 0, 255).astype('uint8')
-    print(img_array)
     save_img = Image.fromarray(img_array)
     save_img.save(path)
     print("Image saved as: ", path)
@@ -64,7 +63,6 @@ def white_img(img_shape):
     return  np.ones([1, img_shape[1], img_shape[2], 3]) * 255
 
 def rand_img(img_shape):
-    print("random image shape: ", img_shape)
     return np.random.uniform(0, 255, (1, img_shape[1], img_shape[2], 3)) - 128
 
 def rgb2bgr(img_array):
