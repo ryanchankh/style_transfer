@@ -40,7 +40,7 @@ def optimal_dimension(cont_img_path=None, styl_img_path=None, square=False):
 def load_img(path, shape=None, preprocess=True):
     image = Image.open(path)
     if shape is not None:
-        shape = (shape[2], shape[1])
+        shape = (shape[1], shape[2])
         image = image.resize(shape)
     img_array = np.asarray(image, dtype=np.float32)
     img_array = np.expand_dims(img_array, axis=0)
@@ -50,10 +50,11 @@ def load_img(path, shape=None, preprocess=True):
     return img_array
 
 def save_img(path, x, img_shape):
-    img_array = np.copy(x)
-    img_array = img_array.reshape((img_shape[1], img_shape[2], 3))
+    img_array = np.copy(x)[0]
+    print(type(img_array))
     img_array = bgr2rgb(img_array)
     img_array = np.clip(img_array, 0, 255).astype('uint8')
+    print(img_array)
     save_img = Image.fromarray(img_array)
     save_img.save(path)
     print("Image saved as: ", path)
@@ -63,7 +64,7 @@ def white_img(img_shape):
     return  np.ones([1, img_shape[1], img_shape[2], 3]) * 255
 
 def rand_img(img_shape):
-    return np.random.uniform(0, 255, (1, img_shape[1], img_shape[2], 3)) - 128
+    return np.random.uniform(0, 255, (1, img_shape[2], img_shape[1], 3)) - 128
 
 def rgb2bgr(img_array):
     img_array[:, :, :, 0] -= 103.939

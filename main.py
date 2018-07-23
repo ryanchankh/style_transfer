@@ -21,11 +21,11 @@ class OPTIONS():
     # hyper-parameters
     #img_shape = utils.optimal_dimension(cont_img_path, styl_img_path, square=False)
     #img_shape = utils.optimal_dimension() # [batch, width, height, channels]
-    img_shape = np.array([1, 100, 300, 3])
+    img_shape = np.array([1, 224, 224, 3])
     alpha = 5           # style weight alpha
     beta = 0.025         # content weight beta
     l_rate = 0
-    num_steps = 10     # training iterations
+    num_steps = 50     # training iterations
     save_per_step = 5   # save image per this number of step
 
    # content and style layers used in style transfer
