@@ -31,7 +31,7 @@ class Logger():
 def optimal_dimension(cont_img_path=None, styl_img_path=None, square=False):
     if cont_img_path is None and styl_img_path is None:
         return np.array([1, 224, 224, 3])
-    cont_img_width, cont_img_height = Image.open(cont_img_path).size
+    cont_img_height, cont_img_width = Image.open(cont_img_path).size
     if square:
         max_len = max(cont_img_width, cont_img_height)
         return np.array([1, max_len, max_len, 3])
@@ -40,7 +40,7 @@ def optimal_dimension(cont_img_path=None, styl_img_path=None, square=False):
 def load_img(path, shape=None, preprocess=True):
     image = Image.open(path)
     if shape is not None:
-        shape = (shape[1], shape[2])
+        shape = (shape[2], shape[1])
         image = image.resize(shape)
     img_array = np.asarray(image, dtype=np.float32)
     img_array = np.expand_dims(img_array, axis=0)
@@ -61,11 +61,10 @@ def save_img(path, x, img_shape):
     return save_img
 
 def white_img(img_shape):
-    img_array = np.ones([img_shape[1], img_shape[2], 3]) * 255
-    img_array = np.expand_dims(img_array, axis=0)
-    return img_array
+    return  np.ones([1, img_shape[1], img_shape[2], 3]) * 255
 
 def rand_img(img_shape):
+    print("random image shape: ", img_shape)
     return np.random.uniform(0, 255, (1, img_shape[1], img_shape[2], 3)) - 128
 
 def rgb2bgr(img_array):

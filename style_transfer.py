@@ -50,7 +50,7 @@ class StyleTransfer():
             losses = []
             for layer in self.cont_layers:
 #                losses.append(tf.losses.mean_squared_error(self.gen_cont_activity[layer], self.cont_activity[layer]))
-                losses.append(tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2)) / 2)
+                losses.append(tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2)) / 2.)
         return self.beta * tf.reduce_sum(losses)
 
     def styl_loss(self):
@@ -63,7 +63,6 @@ class StyleTransfer():
                 styl_gram = self.grammian(self.styl_activity[layer])
                 gen_gram = self.grammian(self.gen_styl_activity[layer])
                 #losses[layer] = (1. / (2. * (channels ** 2) * (feature_map_size ** 2))) * tf.losses.mean_squared_error(styl_gram, gen_gram)
-                print("losses: {}".format(losses))
                 losses[layer] = (1. / (2. * (channels ** 2) * (feature_map_size ** 2))) * tf.reduce_sum(tf.pow(styl_gram - gen_gram, 2))
 
             return self.alpha * tf.reduce_sum([self.styl_weights[l] * losses[l] for l in self.styl_layers])
