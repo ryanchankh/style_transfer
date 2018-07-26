@@ -22,10 +22,10 @@ class OPTIONS():
     #img_shape = utils.optimal_dimension(cont_img_path, styl_img_path, square=False)
     #img_shape = utils.optimal_dimension() # [batch, width, height, channels]
     img_shape = np.array([1, 224, 224, 3])
-    alpha = 5           # style weight alpha
-    beta = 0.025         # content weight beta
+    alpha = 1           # style weight alpha
+    beta = 0.01         # content weight beta
     l_rate = 0
-    num_steps = 50     # training iterations
+    num_steps = 100     # training iterations
     save_per_step = 5   # save image per this number of step
 
    # content and style layers used in style transfer
@@ -38,8 +38,6 @@ class OPTIONS():
                     "conv3_1": 0.2, "conv3_2": 0, "conv3_3": 0.2, "conv3_4": 0, "pool3": 0,
                     "conv4_1": 0.2, "conv4_2": 0, "conv4_3": 0.2, "conv4_4": 0, "pool4": 0,
                     "conv5_1": 0.2, "conv5_2": 0, "conv5_3": 0.2, "conv5_4": 0, "pool5": 0}
-
-
 
 logger = utils.Logger(OPTIONS)
 

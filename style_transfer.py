@@ -2,7 +2,8 @@ import numpy as np
 import tensorflow as tf
 
 #from vgg19.vgg_keras import VGG19
-from vgg19.vgg import VGG19
+#from vgg19.vgg import VGG19
+from vgg19.vgg_mat import VGG19
 
 
 class StyleTransfer():
