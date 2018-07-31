@@ -22,8 +22,6 @@ class VGG19():
 
     def __init__(self, data_path="./vgg19/imagenet-vgg-verydeep-19.mat"):
         data = scipy.io.loadmat(data_path)
-        if not all(i in data for i in ('layers', 'classes', 'normalization')):
-            raise ValueError("You're using the wrong VGG19 data. Please follow the instructions in the README to download the correct data.")
         self.weights = data['layers'][0]
 
     def build(self, input_image):
@@ -32,7 +30,9 @@ class VGG19():
         for i, name in enumerate(self.layers):
             kind = name[:4]
             if kind == 'conv':
-                kernels, bias = self.weights[i][0][0][0][0]
+                kernels = self.weights[i][0][0][2][0][0]
+                bias = self.weights[i][0][0][2][0][1]
+
                 # matconvnet: weights are [width, height, in_channels, out_channels]
                 # tensorflow: weights are [height, width, in_channels, out_channels]
                 kernels = np.transpose(kernels, (1, 0, 2, 3))
