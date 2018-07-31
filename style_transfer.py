@@ -40,8 +40,8 @@ class StyleTransfer():
                 self.gen_cont_activity = self.gen_model.layer_dict(self.cont_layers)
 
             with tf.name_scope("losses") as scope:
-                self.styl_loss = self._styl_loss()
-                self.cont_loss = self._cont_loss()
+                self.styl_loss = self.alpha * self._styl_loss()
+                self.cont_loss = self.beta * self._cont_loss()
                 self.total_loss = self.styl_loss + self.cont_loss
 
             with tf.name_scope("train") as scope:
@@ -50,25 +50,31 @@ class StyleTransfer():
 
     def _cont_loss(self):
         with tf.name_scope("cont_loss") as scope:
-            losses = []
+            losses = 0
             for layer in self.cont_layers:
+                layer_loss = (tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2)) / 2.)
+
 #                losses.append(tf.losses.mean_squared_error(self.gen_cont_activity[layer], self.cont_activity[layer]))
-                losses.append(tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2)) / 2.)
-        return self.beta * tf.reduce_sum(losses)
+                #losses.append(tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2)) / 2.)
+                losses += layer_loss
+        return losses
+        return tf.reduce_sum(losses)
 
     def _styl_loss(self):
         with tf.name_scope("styl_loss") as scope:
-            losses = {}
+            losses = 0
             for layer in self.styl_layers:
                 img_shape = self.gen_styl_activity[layer].get_shape().as_list()
+                print(img_shape)
                 channels = img_shape[3]
                 feature_map_size = img_shape[1] * img_shape[2]
                 styl_gram = self.grammian(self.styl_activity[layer])
                 gen_gram = self.grammian(self.gen_styl_activity[layer])
                 #losses[layer] = (1. / (2. * (channels ** 2) * (feature_map_size ** 2))) * tf.losses.mean_squared_error(styl_gram, gen_gram)
-                losses[layer] = (1. / (4. * (channels ** 2) * (feature_map_size ** 2))) * tf.reduce_sum(tf.pow(styl_gram - gen_gram, 2))
+                losses += self.styl_weights[layer] *  (1. / (4. * (channels ** 2) * (feature_map_size ** 2))) * tf.reduce_sum(tf.pow(styl_gram - gen_gram, 2))
 
-            return self.alpha * tf.reduce_sum([self.styl_weights[l] * losses[l] for l in self.styl_layers])
+        return losses
+        return tf.reduce_sum([self.styl_weights[l] * losses[l] for l in self.styl_layers])
 
     def grammian(self, features):
         features_shape = tf.shape(features)
@@ -80,10 +86,10 @@ class StyleTransfer():
             if self.step % save_per_step == 0:
                 image = np.reshape(image, newshape=self.img_shape)
                 logger.save_img_step(self.step, image, self.img_shape)
-            self.step += 1
         return helper
 
     def loss_callback(self):
         def helper(styl_loss, cont_loss, total_loss):
             print("Step: {}\tStyle Loss: {}\tContent Loss: {}\tTotal Loss: {}".format(self.step, styl_loss, cont_loss, total_loss))
+            self.step += 1
         return helper
