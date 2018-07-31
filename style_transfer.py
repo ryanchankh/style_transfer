@@ -52,8 +52,13 @@ class StyleTransfer():
         with tf.name_scope("cont_loss") as scope:
             losses = 0
             for layer in self.cont_layers:
-                layer_loss = (tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2)) / 2.)
+                img_shape = self.gen_cont_activity[layer].get_shape().as_list()
+                channels = img_shape[3]
+                feature_map_size = img_shape[1] * img_shape[2]
 
+#                layer_loss = (tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2)) / 2.)
+
+                layer_loss = (1. / (2. * np.sqrt(channels) * np.sqrt(feature_map_size))) * tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2))
 #                losses.append(tf.losses.mean_squared_error(self.gen_cont_activity[layer], self.cont_activity[layer]))
                 #losses.append(tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2)) / 2.)
                 losses += layer_loss
@@ -65,7 +70,6 @@ class StyleTransfer():
             losses = 0
             for layer in self.styl_layers:
                 img_shape = self.gen_styl_activity[layer].get_shape().as_list()
-                print(img_shape)
                 channels = img_shape[3]
                 feature_map_size = img_shape[1] * img_shape[2]
                 styl_gram = self.grammian(self.styl_activity[layer])
