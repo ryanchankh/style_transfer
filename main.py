@@ -21,10 +21,9 @@ class OPTIONS():
     # hyper-parameters
     #img_shape = utils.optimal_dimension(cont_img_path, styl_img_path, square=False)
     #img_shape = utils.optimal_dimension() # [batch, width, height, channels]
-    img_shape = np.array([1, 224, 224, 3])
+    img_shape = np.array([1, 512, 512, 3])
     alpha = 1           # style weight alpha
-    beta = 0.01         # content weight beta
-    l_rate = 0
+    beta = 1e-3         # content weight beta
     num_steps = 100     # training iterations
     save_per_step = 5   # save image per this number of step
 
@@ -54,8 +53,7 @@ model = StyleTransfer(rand_img,
                       OPTIONS.styl_layers,
                       OPTIONS.styl_weights,
                       OPTIONS.alpha,
-                      OPTIONS.beta,
-                      OPTIONS.l_rate)
+                      OPTIONS.beta)
 
 
 with tf.Session(graph=model.graph) as sess:
@@ -66,6 +64,8 @@ with tf.Session(graph=model.graph) as sess:
     optimizer = ScipyOptimizerInterface(model.total_loss, options={'maxiter': OPTIONS.num_steps})
     optimizer.minimize(sess,
                        feed_dict=feed_dict,
-                       step_callback=model.step_callback(logger, sess, OPTIONS.save_per_step))
+                       fetches=[model.styl_loss, model.cont_loss, model.total_loss],
+                       step_callback=model.step_callback(logger, sess, OPTIONS.save_per_step),
+                       loss_callback=model.loss_callback())
     gen_img = sess.run(model.image)
     utils.save_img(OPTIONS.gen_folder_path+"result.jpg", gen_img, OPTIONS.img_shape)

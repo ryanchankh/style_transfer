@@ -2,13 +2,13 @@ import numpy as np
 import tensorflow as tf
 
 #from vgg19.vgg_keras import VGG19
-#from vgg19.vgg import VGG19
-from vgg19.vgg_mat import VGG19
+from vgg19.vgg import VGG19
+#from vgg19.vgg_mat import VGG19
 
 
 class StyleTransfer():
 
-    def __init__(self, init_img, img_shape, cont_layers, styl_layers, styl_weights, alpha, beta, l_rate):
+    def __init__(self, init_img, img_shape, cont_layers, styl_layers, styl_weights, alpha, beta, l_rate=0):
         self.init_img = init_img
         self.img_shape = img_shape
         self.cont_layers = cont_layers
@@ -40,13 +40,15 @@ class StyleTransfer():
                 self.gen_cont_activity = self.gen_model.layer_dict(self.cont_layers)
 
             with tf.name_scope("losses") as scope:
-                self.total_loss = self.styl_loss() + self.cont_loss()
+                self.styl_loss = self._styl_loss()
+                self.cont_loss = self._cont_loss()
+                self.total_loss = self.styl_loss + self.cont_loss
 
             with tf.name_scope("train") as scope:
                 self.train = tf.train.AdamOptimizer(self.l_rate).minimize(self.total_loss)
         return graph
 
-    def cont_loss(self):
+    def _cont_loss(self):
         with tf.name_scope("cont_loss") as scope:
             losses = []
             for layer in self.cont_layers:
@@ -54,7 +56,7 @@ class StyleTransfer():
                 losses.append(tf.reduce_sum(tf.pow(self.gen_cont_activity[layer] - self.cont_activity[layer], 2)) / 2.)
         return self.beta * tf.reduce_sum(losses)
 
-    def styl_loss(self):
+    def _styl_loss(self):
         with tf.name_scope("styl_loss") as scope:
             losses = {}
             for layer in self.styl_layers:
@@ -64,7 +66,7 @@ class StyleTransfer():
                 styl_gram = self.grammian(self.styl_activity[layer])
                 gen_gram = self.grammian(self.gen_styl_activity[layer])
                 #losses[layer] = (1. / (2. * (channels ** 2) * (feature_map_size ** 2))) * tf.losses.mean_squared_error(styl_gram, gen_gram)
-                losses[layer] = (1. / (2. * (channels ** 2) * (feature_map_size ** 2))) * tf.reduce_sum(tf.pow(styl_gram - gen_gram, 2))
+                losses[layer] = (1. / (4. * (channels ** 2) * (feature_map_size ** 2))) * tf.reduce_sum(tf.pow(styl_gram - gen_gram, 2))
 
             return self.alpha * tf.reduce_sum([self.styl_weights[l] * losses[l] for l in self.styl_layers])
 
@@ -82,7 +84,6 @@ class StyleTransfer():
         return helper
 
     def loss_callback(self):
-        def helper(*args):
-            print(*args)
-
+        def helper(styl_loss, cont_loss, total_loss):
+            print("Step: {}\tStyle Loss: {}\tContent Loss: {}\tTotal Loss: {}".format(self.step, styl_loss, cont_loss, total_loss))
         return helper

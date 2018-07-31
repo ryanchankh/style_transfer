@@ -20,7 +20,7 @@ class VGG19():
         'relu5_3', 'conv5_4', 'relu5_4'
     )
 
-    def __init__(self, data_path="./vgg19/vgg19.mat"):
+    def __init__(self, data_path="./vgg19/imagenet-vgg-verydeep-19.mat"):
         data = scipy.io.loadmat(data_path)
         if not all(i in data for i in ('layers', 'classes', 'normalization')):
             raise ValueError("You're using the wrong VGG19 data. Please follow the instructions in the README to download the correct data.")
