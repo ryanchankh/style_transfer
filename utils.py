@@ -26,24 +26,23 @@ class Logger():
         img_path = self.folder_path + "step_" + str(step) + ".jpg"
         save_img(img_path, gen_img, img_shape)
 
-
-
-def optimal_dimension(cont_img_path=None, styl_img_path=None, square=False):
-    if cont_img_path is None and styl_img_path is None:
+def optimal_dimension(img_path=None, square=False):
+    # (batch, height, weight, channel)
+    if img_path is None:
         return np.array([1, 224, 224, 3])
-    height, width = Image.open(cont_img_path).size
-    print(cont_img_height, cont_img_width)
+    width, height = Image.open(img_path).size
     if square:
-        max_len = max(cont_img_width, cont_img_height)
+        max_len = max(height, width)
         return np.array([1, max_len, max_len, 3])
-    return np.array([1, cont_img_height, cont_img_width, 3])
+    return np.array([1, height, width, 3])
 
 def load_img(path, shape=None, preprocess=False):
     image = Image.open(path)
     if shape is not None:
-        shape = (shape[2], shape[1])
+        h, w = shape[1], shape[2]
+        shape = (h, w)
         image = image.resize(shape)
-    img_array = np.asarray(image, dtype=np.float32)
+    img_array = np.float32(image)
     img_array = np.expand_dims(img_array, axis=0)
     if preprocess:
         img_array = rgb2bgr(img_array)
