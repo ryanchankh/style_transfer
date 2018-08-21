@@ -29,12 +29,19 @@ save_per_step = 5   # save image per this number of step
 cont_layers = ["conv4_2"]
 styl_layers = ["conv1_1", "conv2_1", "conv3_1", "conv4_1", "conv5_1"]
 
-    # weights on each style layer
+# weights on each style layer
 styl_weights = {"conv1_1": 0.2, "conv1_2": 0.2, "pool1": 0,
                 "conv2_1": 0.2, "conv2_2": 0, "pool2": 0,
                 "conv3_1": 0.2, "conv3_2": 0, "conv3_3": 0.2, "conv3_4": 0, "pool3": 0,
                 "conv4_1": 0.2, "conv4_2": 0, "conv4_3": 0.2, "conv4_4": 0, "pool4": 0,
                 "conv5_1": 0.2, "conv5_2": 0, "conv5_3": 0.2, "conv5_4": 0, "pool5": 0}
+
+# weights on each style layer
+cont_weights = {"conv1_1": 1, "conv1_2": 0.2, "pool1": 0,
+                "conv2_1": 1, "conv2_2": 0, "pool2": 0,
+                "conv3_1": 1, "conv3_2": 0, "conv3_3": 0.2, "conv3_4": 0, "pool3": 0,
+                "conv4_1": 1, "conv4_2": 1, "conv4_3": 0.2, "conv4_4": 0, "pool4": 0,
+                "conv5_1": 1, "conv5_2": 0, "conv5_3": 0.2, "conv5_4": 0, "pool5": 0}
 
 
 ################
@@ -50,6 +57,7 @@ model = StyleTransfer(init_img,
                       styl_img,
                       cont_layers,
                       styl_layers,
+                      cont_weights,
                       styl_weights,
                       alpha,
                       beta)

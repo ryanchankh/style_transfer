@@ -4,10 +4,9 @@ import tensorflow as tf
 import utils
 from vgg.vgg import VGG19
 #from vgg.vgg_mat import VGG19
-#from vgg.vgg_keras import VGG19
 
 class StyleTransfer():
-    def __init__(self, init_img, cont_img, styl_img, cont_layers, styl_layers, styl_weights, alpha, beta):
+    def __init__(self, init_img, cont_img, styl_img, cont_layers, styl_layers, cont_weights, styl_weights, alpha, beta):
         self.init_img = init_img
         self.cont_img = cont_img
         self.styl_img = styl_img
@@ -15,7 +14,9 @@ class StyleTransfer():
         self.cont_layers = cont_layers
         self.styl_layers = styl_layers
 
+        self.cont_weights = cont_weights
         self.styl_weights = styl_weights
+
         self.alpha = alpha
         self.beta = beta
 
@@ -29,18 +30,18 @@ class StyleTransfer():
                 self.image = tf.Variable(self.init_img, trainable=True, dtype=tf.float32)
 
             with tf.variable_scope("activitiy") as scope:
-                self.styl_act = self.vgg.build(self.styl_img).layer_dict(self.styl_layers)
-                self.styl_gram = {l: self._gram(self.styl_act[l]) for l in self.styl_layers}
+                styl_act = self.vgg.build(self.styl_img).layer_dict(self.styl_layers)
+                self.styl_gram = {l: self._gram(styl_act[l]) for l in self.styl_layers}
                 self.cont_act = self.vgg.build(self.cont_img).layer_dict(self.cont_layers)
 
-                self.gen_styl_act = VGG19().build(self.image).layer_dict(self.styl_layers)
-                self.gen_cont_act = VGG19().build(self.image).layer_dict(self.cont_layers)
+                self.gen_styl_act = self.vgg.build(self.image).layer_dict(self.styl_layers)
+                self.gen_cont_act = self.vgg.build(self.image).layer_dict(self.cont_layers)
 
             with tf.variable_scope("cont_loss") as scope:
                 self.cont_loss = 0.
                 for l in self.cont_layers:
-                    self.cont_loss += tf.reduce_sum(tf.pow((self.gen_cont_act[l] - self.cont_act[l]), 2)) / 2.
-                    
+                    self.cont_loss += self.cont_weights[l] * tf.reduce_sum(tf.pow((self.gen_cont_act[l] - self.cont_act[l]), 2)) / 2.
+
             with tf.variable_scope("styl_loss") as scope:
                 self.styl_loss = 0.
                 for l in self.styl_layers:
