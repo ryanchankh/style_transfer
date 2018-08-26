@@ -23,7 +23,7 @@ img_shape = np.array((1, 224, 224, 3))
 alpha = 1e-3        # content weight alpha
 beta = 1            # style weight beta
 num_steps = 1000     # training iterations
-save_per_step = 5   # save image per this number of step
+save_per_step = 10   # save image per this number of step
 
 # content and style layers used in style transfer
 cont_layers = ["conv4_2"]
@@ -51,6 +51,10 @@ cont_weights = {"conv1_1": 1, "conv1_2": 0.2, "pool1": 0,
 cont_img = utils.load_image(cont_path, img_shape)
 styl_img = utils.load_image(styl_path, img_shape)
 init_img = utils.load_init_image(cont_img, styl_img, img_shape, choice="rand_uni")
+
+cont_img = utils.img_preprocess(cont_img)
+styl_img = utils.img_preprocess(styl_img)
+init_img = utils.img_preprocess(init_img)
 
 model = StyleTransfer(init_img,
                       cont_img,
@@ -86,5 +90,6 @@ with tf.Session(graph=model.graph) as sess:
                        loss_callback=model.loss_callback())
 
     result_array = sess.run(model.image)
+    result_array = utils.img_postprocess(result_array)
     utils.save_image(folder, result_array)
 print("Style Transfer Complete.")

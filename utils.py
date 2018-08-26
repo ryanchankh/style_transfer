@@ -2,9 +2,9 @@ from datetime import datetime
 
 import numpy as np
 import skimage
-import skimage.io 
+import skimage.io
 import skimage.transform
-import tensorflow as tf 
+import tensorflow as tf
 
 def load_image(path, img_shape=None):
     img_array = skimage.io.imread(path)
@@ -12,9 +12,9 @@ def load_image(path, img_shape=None):
 
     if img_shape is not None:
         img_shape = img_shape[1:3]
-        img_array = skimage.transform.resize(img_array, img_shape, mode="constant")
-    img_array = np.expand_dims(img_array, 0)
-    return np.float32(img_array)
+        img_array = skimage.transform.resize(img_array, img_shape, anti_aliasing=False, mode="constant")
+    img_array = np.float32(img_array) * 255.
+    return img_array
 
 def load_init_image(cont_img, styl_img, img_shape, choice="white"):
     if choice == "cont":
@@ -22,9 +22,9 @@ def load_init_image(cont_img, styl_img, img_shape, choice="white"):
     elif choice == "styl":
         return styl_img.copy()
     elif choice == "white":
-        return np.zeros(img_shape, dtype=np.float32) + 1
+        return np.zeros(img_shape, dtype=np.float32) + 255
     else:
-        return np.float32(np.random.uniform(0, 1, size=img_shape))
+        return np.float32(np.random.uniform(0, 255, size=img_shape[1:]))
 
 def optimal_dimension(cont_path, square=False):
     full_shape = skimage.io.imread(cont_path).shape
@@ -36,8 +36,6 @@ def optimal_dimension(cont_path, square=False):
     return (1, height, width, channel)
 
 def save_image(path, img_array, step=None):
-    img_array = np.copy(img_array)[0]
-    img_array = img_array * 255.
     img_array = np.clip(img_array, 0, 255).astype('uint8')
 
     if step is None:
@@ -46,3 +44,32 @@ def save_image(path, img_array, step=None):
         file_name = path + datetime.now().strftime("%H%M%S_%Y%m%d") + "step" + str(step) + ".jpg"
 
     skimage.io.imsave(file_name, img_array)
+
+def img_preprocess(img_array):
+    # add batch dimension to image
+    img_array = np.expand_dims(img_array, 0)
+    print("img array shape {}".format(img_array.shape))
+
+    # subtract mean pixel values
+    img_array[:, :, :, 0] -= 103.939
+    img_array[:, :, :, 1] -= 116.779
+    img_array[:, :, :, 2] -= 123.68
+
+    # convert RGB to BGR
+    img_array = img_array[:, :, :, ::-1]
+
+    return img_array
+
+def img_postprocess(img_array):
+    # make copy of reference array and reduce dimension
+    img_array = np.copy(img_array[0])
+
+    # convert back from BGR to RGB
+    img_array = img_array[:, :, ::-1]
+
+    # add mean pixel values to img_array
+    img_array[:, :, 0] += 103.939
+    img_array[:, :, 1] += 116.779
+    img_array[:, :, 2] += 123.68
+
+    return img_array

@@ -3,7 +3,6 @@ import tensorflow as tf
 
 import utils
 from vgg.vgg import VGG19
-#from vgg.vgg_mat import VGG19
 
 class StyleTransfer():
     def __init__(self, init_img, cont_img, styl_img, cont_layers, styl_layers, cont_weights, styl_weights, alpha, beta):
@@ -61,7 +60,7 @@ class StyleTransfer():
         def helper(image):
             if self.step % save_per_step == 0:
                 image = np.reshape(image, img_shape)
-                print(image * 255.)
+                image = utils.img_postprocess(image)
                 utils.save_image(step_folder, image, self.step)
                 print("Image saved.")
         return helper
