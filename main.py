@@ -22,7 +22,7 @@ folder = "./gen_img/"
 img_shape = np.array((1, 224, 224, 3))
 alpha = 1e-3        # content weight alpha
 beta = 1            # style weight beta
-num_steps = 1000     # training iterations
+num_steps = 100     # training iterations
 save_per_step = 10   # save image per this number of step
 
 # content and style layers used in style transfer

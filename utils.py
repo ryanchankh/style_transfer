@@ -48,7 +48,6 @@ def save_image(path, img_array, step=None):
 def img_preprocess(img_array):
     # add batch dimension to image
     img_array = np.expand_dims(img_array, 0)
-    print("img array shape {}".format(img_array.shape))
 
     # subtract mean pixel values
     img_array[:, :, :, 0] -= 103.939
