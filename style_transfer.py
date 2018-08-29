@@ -2,7 +2,8 @@ import numpy as np
 import tensorflow as tf
 
 import utils
-from vgg.vgg import VGG19
+#from vgg.vgg import VGG19
+from vgg.vgg_mat import VGG19
 
 class StyleTransfer():
     def __init__(self, init_img, cont_img, styl_img, cont_layers, styl_layers, cont_weights, styl_weights, alpha, beta):
@@ -39,7 +40,7 @@ class StyleTransfer():
             with tf.variable_scope("cont_loss") as scope:
                 self.cont_loss = 0.
                 for l in self.cont_layers:
-                    self.cont_loss += self.cont_weights[l] * tf.reduce_sum(tf.pow((self.gen_cont_act[l] - self.cont_act[l]), 2)) / 2.
+                    self.cont_loss += self.cont_weights[l] * (1 / 2.) * tf.reduce_sum(tf.pow((self.gen_cont_act[l] - self.cont_act[l]), 2))
 
             with tf.variable_scope("styl_loss") as scope:
                 self.styl_loss = 0.

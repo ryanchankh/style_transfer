@@ -20,21 +20,23 @@ folder = "./gen_img/"
 # hyper-parameters
 #img_shape = utils.optimal_dimension(cont_path, square=False) # [batch, width, height, channels]
 img_shape = np.array((1, 224, 224, 3))
-alpha = 1e-3        # content weight alpha
+alpha = 5e-4        # content weight alpha
 beta = 1            # style weight beta
 num_steps = 100     # training iterations
 save_per_step = 10   # save image per this number of step
 
 # content and style layers used in style transfer
 cont_layers = ["conv4_2"]
-styl_layers = ["conv1_1", "conv2_1", "conv3_1", "conv4_1", "conv5_1"]
+#styl_layers = ["conv1_1", "conv2_1", "conv3_1", "conv4_1", "conv5_1"]
+styl_layers = ["relu1_1", "relu2_1", "relu3_1", "relu4_1", "relu5_1"]
 
 # weights on each style layer
 styl_weights = {"conv1_1": 0.2, "conv1_2": 0.2, "pool1": 0,
                 "conv2_1": 0.2, "conv2_2": 0, "pool2": 0,
                 "conv3_1": 0.2, "conv3_2": 0, "conv3_3": 0.2, "conv3_4": 0, "pool3": 0,
                 "conv4_1": 0.2, "conv4_2": 0, "conv4_3": 0.2, "conv4_4": 0, "pool4": 0,
-                "conv5_1": 0.2, "conv5_2": 0, "conv5_3": 0.2, "conv5_4": 0, "pool5": 0}
+                "conv5_1": 0.2, "conv5_2": 0, "conv5_3": 0.2, "conv5_4": 0, "pool5": 0,
+                "relu1_1": 0.2, "relu2_1": 0.2, "relu3_1": 0.2, "relu4_1": 0.2, "relu5_1": 0.2}
 
 # weights on each style layer
 cont_weights = {"conv1_1": 1, "conv1_2": 0.2, "pool1": 0,

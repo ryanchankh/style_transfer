@@ -12,7 +12,7 @@ def load_image(path, img_shape=None):
 
     if img_shape is not None:
         img_shape = img_shape[1:3]
-        img_array = skimage.transform.resize(img_array, img_shape, anti_aliasing=False, mode="constant")
+        img_array = skimage.transform.resize(img_array, img_shape, mode="constant")
     img_array = np.float32(img_array) * 255.
     return img_array
 

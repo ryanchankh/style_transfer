@@ -20,7 +20,7 @@ class VGG19():
         'relu5_3', 'conv5_4', 'relu5_4'
     )
 
-    def __init__(self, data_path="./vgg19/imagenet-vgg-verydeep-19.mat"):
+    def __init__(self, data_path="./vgg/imagenet-vgg-verydeep-19.mat"):
         data = scipy.io.loadmat(data_path)
         self.weights = data['layers'][0]
 
