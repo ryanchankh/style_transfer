@@ -93,7 +93,7 @@ class VGG19():
         with tf.variable_scope(name):
             filt = self.get_conv_filter(name)
 
-            conv = tf.nn.conv2d(bottom, filt, [1, 3, 3, 1], padding='SAME')
+            conv = tf.nn.conv2d(bottom, filt, [1, 1, 1, 1], padding='SAME')
 
             conv_biases = self.get_bias(name)
             bias = tf.nn.bias_add(conv, conv_biases)

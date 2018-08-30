@@ -2,8 +2,8 @@ import numpy as np
 import tensorflow as tf
 
 import utils
-#from vgg.vgg import VGG19
-from vgg.vgg_mat import VGG19
+from vgg.vgg import VGG19
+#from vgg.vgg_mat import VGG19
 
 class StyleTransfer():
     def __init__(self, init_img, cont_img, styl_img, cont_layers, styl_layers, cont_weights, styl_weights, alpha, beta):
@@ -34,22 +34,28 @@ class StyleTransfer():
                 self.styl_gram = {l: self._gram(styl_act[l]) for l in self.styl_layers}
                 self.cont_act = self.vgg.build(self.cont_img).layer_dict(self.cont_layers)
 
-                self.gen_styl_act = self.vgg.build(self.image).layer_dict(self.styl_layers)
-                self.gen_cont_act = self.vgg.build(self.image).layer_dict(self.cont_layers)
+                img_model = self.vgg.build(self.image)
+                self.gen_cont_act = img_model.layer_dict(self.cont_layers)
+                self.gen_styl_act = img_model.layer_dict(self.styl_layers)
 
             with tf.variable_scope("cont_loss") as scope:
                 self.cont_loss = 0.
                 for l in self.cont_layers:
-                    self.cont_loss += self.cont_weights[l] * (1 / 2.) * tf.reduce_sum(tf.pow((self.gen_cont_act[l] - self.cont_act[l]), 2))
+                    P = self.cont_act[l]
+                    F = self.gen_cont_act[l]
+                    w = self.cont_weights[l]
+                    self.cont_loss +=  w * 0.5 * tf.reduce_sum(tf.pow((F - P), 2))
 
             with tf.variable_scope("styl_loss") as scope:
                 self.styl_loss = 0.
                 for l in self.styl_layers:
-                    _, height, width, channels = self.gen_styl_act[l].get_shape()
-                    feature_size = height.value * width.value
-                    channels = channels.value
-                    gen_styl_gram = self._gram(self.gen_styl_act[l])
-                    self.styl_loss += self.styl_weights[l] * tf.reduce_sum(tf.pow((self.styl_gram[l] - gen_styl_gram), 2)) * (1 / (4 * feature_size**2 * channels**2))
+                    _, h, w, c = self.gen_styl_act[l].get_shape()
+                    M = h.value * w.value
+                    N = c.value
+                    A = self.styl_gram[l]
+                    G = self._gram(self.gen_styl_act[l])
+                    w = self.styl_weights[l]
+                    self.styl_loss += w * (1. / (4. * M**2 * N**2)) * tf.reduce_sum(tf.pow((G - A), 2))
 
             with tf.variable_scope("losses") as scope:
                 self.total_loss = self.alpha * self.cont_loss + self.beta * self.styl_loss
