@@ -26,10 +26,10 @@ class StyleTransfer():
 
     def build_graph(self):
         with tf.Graph().as_default() as graph:
-            with tf.variable_scope("inputs") as scope:
+            with tf.name_scope("inputs") as scope:
                 self.image = tf.Variable(self.init_img, trainable=True, dtype=tf.float32)
 
-            with tf.variable_scope("activitiy") as scope:
+            with tf.name_scope("activitiy") as scope:
                 styl_act = self.vgg.build(self.styl_img).layer_dict(self.styl_layers)
                 self.styl_gram = {l: self._gram(styl_act[l]) for l in self.styl_layers}
                 self.cont_act = self.vgg.build(self.cont_img).layer_dict(self.cont_layers)
@@ -38,16 +38,20 @@ class StyleTransfer():
                 self.gen_cont_act = img_model.layer_dict(self.cont_layers)
                 self.gen_styl_act = img_model.layer_dict(self.styl_layers)
 
-            with tf.variable_scope("cont_loss") as scope:
+            with tf.name_scope("cont_loss") as scope:
                 self.cont_loss = 0.
+                self.cont_loss_list = []
                 for l in self.cont_layers:
                     P = self.cont_act[l]
                     F = self.gen_cont_act[l]
                     w = self.cont_weights[l]
-                    self.cont_loss +=  w * 0.5 * tf.reduce_sum(tf.pow((F - P), 2))
+                    layer_loss = w * (1. / 2.) * tf.reduce_sum(tf.pow((F - P), 2))
+                    self.cont_loss_list.append(layer_loss)
+                    self.cont_loss += layer_loss
 
-            with tf.variable_scope("styl_loss") as scope:
+            with tf.name_scope("styl_loss") as scope:
                 self.styl_loss = 0.
+                self.styl_loss_list = []
                 for l in self.styl_layers:
                     _, h, w, c = self.gen_styl_act[l].get_shape()
                     M = h.value * w.value
@@ -55,7 +59,9 @@ class StyleTransfer():
                     A = self.styl_gram[l]
                     G = self._gram(self.gen_styl_act[l])
                     w = self.styl_weights[l]
-                    self.styl_loss += w * (1. / (4. * M**2 * N**2)) * tf.reduce_sum(tf.pow((G - A), 2))
+                    layer_loss = w * (1. / (4. * M**2 * N**2)) * tf.reduce_sum(tf.pow((G - A), 2))
+                    self.styl_loss_list.append(layer_loss)
+                    self.styl_loss += layer_loss
 
             with tf.variable_scope("losses") as scope:
                 self.total_loss = self.alpha * self.cont_loss + self.beta * self.styl_loss
@@ -73,8 +79,15 @@ class StyleTransfer():
         return helper
 
     def loss_callback(self):
-        def helper(styl_loss, cont_loss, total_loss):
+        def helper(styl_loss, cont_loss, total_loss, styl_loss_list, cont_loss_list, gen_cont_act, gen_styl_act, image):
             print("Step: {}\tStyle Loss: {}\tContent Loss: {}\tTotal Loss: {}".format(self.step, styl_loss, cont_loss, total_loss))
+            print("styl_loss_list: {}".format(styl_loss_list))
+            print("cont_loss_list: {}".format(cont_loss_list))
+            #print("gen_cont_act: {}".format(gen_cont_act[self.cont_layers[0]]))
+            #print("cont_act: {}".format(cont_act[self.cont_layers[0]]))
+            #print("gen_styl_act")
+            #[print(l, gen_styl_act[l]) for l in self.styl_layers]
+            print()
             self.step += 1
         return helper
 

@@ -13,7 +13,7 @@ import utils
 #############
 
 # image paths
-styl_path = './images/style/starry_night.jpg'
+styl_path = './images/style/shipwreck.jpg'
 cont_path = './images/content/tubingen.jpg'
 folder = "./gen_img/"
 
@@ -74,9 +74,17 @@ model = StyleTransfer(init_img,
 
 with tf.Session(graph=model.graph) as sess:
     sess.run(tf.global_variables_initializer())
+
+    # debug
+    #[print(sess.run(model.styl_gram[l]), model.styl_gram[l].shape) for l in styl_layers]
+    #[print(sess.run(model.cont_act[l])) for l in cont_layers]
+
     optimizer = ScipyOptimizerInterface(model.total_loss, method="L-BFGS-B", options={'maxiter': num_steps})
     optimizer.minimize(sess,
-                       fetches=[model.styl_loss, model.cont_loss, model.total_loss],
+                       fetches=[model.styl_loss, model.cont_loss, model.total_loss, 
+                                model.styl_loss_list, model.cont_loss_list, 
+                                model.gen_cont_act, model.gen_styl_act, 
+                                model.image],
                        step_callback=model.step_callback(img_shape, save_per_step),
                        loss_callback=model.loss_callback())
 

@@ -22,7 +22,7 @@ def load_init_image(cont_img, styl_img, img_shape, choice="white"):
     elif choice == "styl":
         return styl_img.copy()
     elif choice == "white":
-        return np.zeros(img_shape, dtype=np.float32) + 255
+        return np.zeros(img_shape[1:], dtype=np.float32) + 255
     else:
         return np.float32(np.random.uniform(0, 255, size=img_shape[1:]))
 
