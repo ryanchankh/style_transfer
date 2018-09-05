@@ -19,7 +19,7 @@ folder = "./gen_img/"
 
 # hyper-parameters
 #img_shape = utils.optimal_dimension(cont_path, square=False) # [batch, width, height, channels]
-img_shape = np.array((1, 512, 512, 3))
+img_shape = np.array((1, 10, 10 , 3))
 alpha = 1e-3        # content weight alpha
 beta = 1            # style weight beta
 num_steps = 10000     # training iterations
@@ -78,12 +78,15 @@ with tf.Session(graph=model.graph) as sess:
     # debug
     #[print(sess.run(model.styl_gram[l]), model.styl_gram[l].shape) for l in styl_layers]
     #[print(sess.run(model.cont_act[l])) for l in cont_layers]
+    [print(model.styl_gram[l]) for l in model.styl_gram]
+    [print(model.styl_gram2[l]) for l in styl_layers]
+
 
     optimizer = ScipyOptimizerInterface(model.total_loss, method="L-BFGS-B", options={'maxiter': num_steps})
     optimizer.minimize(sess,
-                       fetches=[model.styl_loss, model.cont_loss, model.total_loss, 
-                                model.styl_loss_list, model.cont_loss_list, 
-                                model.gen_cont_act, model.gen_styl_act, 
+                       fetches=[model.styl_loss, model.cont_loss, model.total_loss,
+                                model.styl_loss_list, model.cont_loss_list,
+                                model.gen_cont_act, model.gen_styl_act,
                                 model.image],
                        step_callback=model.step_callback(img_shape, save_per_step),
                        loss_callback=model.loss_callback())

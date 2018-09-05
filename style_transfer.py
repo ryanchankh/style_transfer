@@ -30,8 +30,9 @@ class StyleTransfer():
                 self.image = tf.Variable(self.init_img, trainable=True, dtype=tf.float32)
 
             with tf.name_scope("activitiy") as scope:
-                styl_act = self.vgg.build(self.styl_img).layer_dict(self.styl_layers)
-                self.styl_gram = {l: self._gram(styl_act[l]) for l in self.styl_layers}
+                self.styl_act = self.vgg.build(self.styl_img).layer_dict(self.styl_layers)
+                self.styl_gram = {l: self._gram(self.styl_act[l]) for l in self.styl_layers}
+                self.styl_gram2 = {l: self.naive_gram(self.styl_act[l]) for l in self.styl_layers}
                 self.cont_act = self.vgg.build(self.cont_img).layer_dict(self.cont_layers)
 
                 img_model = self.vgg.build(self.image)
@@ -97,3 +98,16 @@ class StyleTransfer():
         features_t = tf.transpose(features, perm=(0, 3, 1, 2))
         matrix = tf.reshape(features_t, shape=[c.value, h.value*w.value])
         return tf.matmul(matrix, matrix, transpose_b=True)
+
+    def naive_gram(self, features):
+        _, h, w, c = features.get_shape()
+        gram = []
+        for i in np.arange(c.value):
+            for j in np.arange(c.value):
+                Fi = tf.reshape(features[0, :, :, i], shape=[-1])
+                Fj = tf.reshape(features[0, :, :, j], shape=[-1])
+                gram_ij = tf.tensordot(Fi, Fj, 1)
+                print(gram_ij)
+                gram.append(gram_ij)
+        print(gram)
+        return tf.reshape(gram, (c.value, c.value))
