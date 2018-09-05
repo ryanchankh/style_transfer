@@ -27,7 +27,8 @@ save_per_step = 10   # save image per this number of step
 
 # content and style layers used in style transfer
 cont_layers = ["conv4_2"]
-styl_layers = ["conv1_1", "conv2_1", "conv3_1", "conv4_1", "conv5_1"]
+styl_layers = ["conv1_1"]
+#styl_layers = ["conv1_1", "conv2_1", "conv3_1", "conv4_1", "conv5_1"]
 #styl_layers = ["relu1_1", "relu2_1", "relu3_1", "relu4_1", "relu5_1"]
 
 # weights on each style layer
@@ -78,8 +79,11 @@ with tf.Session(graph=model.graph) as sess:
     # debug
     #[print(sess.run(model.styl_gram[l]), model.styl_gram[l].shape) for l in styl_layers]
     #[print(sess.run(model.cont_act[l])) for l in cont_layers]
-    [print(model.styl_gram[l]) for l in model.styl_gram]
-    [print(model.styl_gram2[l]) for l in styl_layers]
+    print("original implementation")
+    [print(sess.run(model.styl_gram[l])) for l in model.styl_gram]
+    print("naive implementation")
+    [print(sess.run(model.styl_gram2[l])) for l in styl_layers]
+    exit()
 
 
     optimizer = ScipyOptimizerInterface(model.total_loss, method="L-BFGS-B", options={'maxiter': num_steps})
