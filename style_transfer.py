@@ -107,7 +107,5 @@ class StyleTransfer():
                 Fi = tf.reshape(features[0, :, :, i], shape=[-1])
                 Fj = tf.reshape(features[0, :, :, j], shape=[-1])
                 gram_ij = tf.tensordot(Fi, Fj, 1)
-                print(gram_ij)
                 gram.append(gram_ij)
-        print(gram)
         return tf.reshape(gram, (c.value, c.value))
