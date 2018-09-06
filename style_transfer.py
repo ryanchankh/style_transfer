@@ -36,8 +36,8 @@ class StyleTransfer():
                 self.cont_act = self.vgg.build(self.cont_img).layer_dict(self.cont_layers)
 
                 img_model = self.vgg.build(self.image)
-                self.gen_cont_act = img_model.layer_dict(self.cont_layers)
-                self.gen_styl_act = img_model.layer_dict(self.styl_layers)
+                self.gen_cont_act = VGG19().layer_dict(self.cont_layers)
+                self.gen_styl_act = .layer_dict(self.styl_layers)
 
             with tf.name_scope("cont_loss") as scope:
                 self.cont_loss = 0.
