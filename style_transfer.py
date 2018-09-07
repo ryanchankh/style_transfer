@@ -36,8 +36,12 @@ class StyleTransfer():
                 self.cont_act = self.vgg.build(self.cont_img).layer_dict(self.cont_layers)
 
                 img_model = self.vgg.build(self.image)
-                self.gen_cont_act = VGG19().layer_dict(self.cont_layers)
-                self.gen_styl_act = .layer_dict(self.styl_layers)
+            with tf.name_scope("styl_act") as scope:
+                styl_model = VGG19().build(self.image)
+                self.gen_styl_act = styl_model.layer_dict(self.styl_layers)
+            with tf.name_scope("cont_act") as scope:
+                cont_model = VGG19().build(self.image)
+                self.gen_cont_act = cont_model.layer_dict(self.cont_layers)
 
             with tf.name_scope("cont_loss") as scope:
                 self.cont_loss = 0.
@@ -59,8 +63,8 @@ class StyleTransfer():
                     N = c.value
                     A = self.styl_gram[l]
                     G = self._gram(self.gen_styl_act[l])
-                    w = self.styl_weights[l]
-                    layer_loss = w * (1. / (4. * M**2 * N**2)) * tf.reduce_sum(tf.pow((G - A), 2))
+                    lw = self.styl_weights[l]
+                    layer_loss = lw * (1. / (4. * M**2 * N**2)) * tf.reduce_sum(tf.pow((G - A), 2))
                     self.styl_loss_list.append(layer_loss)
                     self.styl_loss += layer_loss
 
@@ -80,15 +84,26 @@ class StyleTransfer():
         return helper
 
     def loss_callback(self):
-        def helper(styl_loss, cont_loss, total_loss, styl_loss_list, cont_loss_list, gen_cont_act, gen_styl_act, image):
+        def helper(styl_loss, cont_loss, total_loss, 
+                   styl_loss_list, cont_loss_list, gen_cont_act, gen_styl_act, 
+                   styl_act, cont_act, image):
             print("Step: {}\tStyle Loss: {}\tContent Loss: {}\tTotal Loss: {}".format(self.step, styl_loss, cont_loss, total_loss))
             print("styl_loss_list: {}".format(styl_loss_list))
             print("cont_loss_list: {}".format(cont_loss_list))
             #print("gen_cont_act: {}".format(gen_cont_act[self.cont_layers[0]]))
             #print("cont_act: {}".format(cont_act[self.cont_layers[0]]))
-            #print("gen_styl_act")
-            #[print(l, gen_styl_act[l]) for l in self.styl_layers]
+            print("gen_styl_act")
+            #[print(l, np.sum(gen_styl_act[l]), np.sum(gen_styl_act[l]*0.2)) for l in self.styl_layers]
+            #[print(l, np.sum(styl_act[l]), np.sum(styl[l])*0.2) for l in styl_layers]
+            for l in self.styl_layers:
+                print("Layer: {}".format(l))
+                a = np.sum(gen_styl_act[l])
+                b = np.sum(styl_act[l])
+                print(a-b)
             print()
+            for l in self.cont_layers:
+                print("Layer: {}".format(l))
+                print(cont_loss_list[0])
             self.step += 1
         return helper
 
