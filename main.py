@@ -13,15 +13,15 @@ import utils
 #############
 
 # image paths
-styl_path = './images/style/shipwreck.jpg'
+styl_path = './images/style/starry_night.jpg'
 cont_path = './images/content/tubingen.jpg'
 folder = "./gen_img/"
 
 # hyper-parameters
 #img_shape = utils.optimal_dimension(cont_path, square=False) # [batch, width, height, channels]
-img_shape = np.array([1, 512, 512, 3])
+img_shape = np.array([1, 300, 300, 3])
 alpha = 1e-3                    # content weight alpha
-beta = 1                        # style weight beta
+beta = 0                        # style weight beta
 num_steps = 10000               # training iterations
 save_per_step = 10              # save image per this number of step
 
@@ -52,13 +52,13 @@ cont_weights = {"conv1_1": 1, "conv1_2": 0.2, "pool1": 0,
 ## PREPROCESS ##
 ################
 
-cont_img = utils.load_image(cont_path, img_shape)
-styl_img = utils.load_image(styl_path, img_shape)
-init_img = utils.load_init_image(cont_img, styl_img, img_shape, choice="rand_uni")
+cont_img = utils.load_image2(cont_path, img_shape)
+styl_img = utils.load_image2(styl_path, img_shape)
+init_img = utils.load_init_image2(cont_img, styl_img, img_shape, choice="rand_uni")
 
-cont_img = utils.img_preprocess(cont_img)
-styl_img = utils.img_preprocess(styl_img)
-init_img = utils.img_preprocess(init_img)
+cont_img = utils.img_preprocess2(cont_img)
+styl_img = utils.img_preprocess2(styl_img)
+init_img = utils.img_preprocess2(init_img)
 
 model = StyleTransfer(init_img,
                       cont_img,

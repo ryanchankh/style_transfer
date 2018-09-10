@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import tensorflow as tf
 
@@ -91,34 +92,54 @@ class StyleTransfer():
         def helper(image):
             if self.step % save_per_step == 0:
                 image = np.reshape(image, img_shape)
-                image = utils.img_postprocess(image)
+                image = utils.img_postprocess2(image)
                 utils.save_image(step_folder, image, self.step)
                 print("Image saved.")
+
+            if self.step % 3 == 0:
+                with open("./log/loss.log", "w") as file:
+                    string = json.dumps(self.loss_track, indent=2)
+                    file.write(string)
         return helper
 
     def loss_callback(self):
         """Optimizer member function. Higher order function called from main.py"""
 
+        # debug
+        self.loss_track = {"step": [], "total_loss": [], "cont_loss": [], "styl_loss": [],
+                           "cont_loss_list": [], "styl_loss_list": []}
         def helper(styl_loss, cont_loss, total_loss,
                    styl_loss_list, cont_loss_list, gen_cont_act, gen_styl_act,
                    styl_act, cont_act, image):
+
+            # add loss to loss track
+            _round_num = lambda num: format(num, '.2f')
+            _round_arr = lambda l: [format(x, '.2f') for x in l]
+            self.loss_track["step"].append(self.step)
+            self.loss_track["total_loss"].append(_round_num(total_loss))
+            self.loss_track["styl_loss"].append(_round_num(styl_loss))
+            self.loss_track["cont_loss"].append(_round_num(cont_loss))
+            self.loss_track["cont_loss_list"].append(_round_arr(cont_loss_list))
+            self.loss_track["styl_loss_list"].append(_round_arr(styl_loss_list))
+
+            # print loss
             print("Step: {}\tStyle Loss: {}\tContent Loss: {}\tTotal Loss: {}".format(self.step, styl_loss, cont_loss, total_loss))
             print("styl_loss_list: {}".format(styl_loss_list))
             print("cont_loss_list: {}".format(cont_loss_list))
             #print("gen_cont_act: {}".format(gen_cont_act[self.cont_layers[0]]))
             #print("cont_act: {}".format(cont_act[self.cont_layers[0]]))
-            print("gen_styl_act")
+            #print("gen_styl_act")
             #[print(l, np.sum(gen_styl_act[l]), np.sum(gen_styl_act[l]*0.2)) for l in self.styl_layers]
             #[print(l, np.sum(styl_act[l]), np.sum(styl[l])*0.2) for l in styl_layers]
-            for l in self.styl_layers:
-                print("Layer: {}".format(l))
-                a = np.sum(gen_styl_act[l])
-                b = np.sum(styl_act[l])
-                print(a-b)
-            print()
-            for l in self.cont_layers:
-                print("Layer: {}".format(l))
-                print(cont_loss_list[0])
+            #for l in self.styl_layers:
+            #    print("Layer: {}".format(l))
+            #    a = np.sum(gen_styl_act[l])
+            #    b = np.sum(styl_act[l])
+            #    print(a-b)
+            #print()
+            #for l in self.cont_layers:
+            #    print("Layer: {}".format(l))
+            #    print(cont_loss_list[0])
             self.step += 1
         return helper
 
