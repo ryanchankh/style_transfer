@@ -129,4 +129,4 @@ def img_postprocess2(img_array):
     img_array[:, :, 1] += 116.779 / 255.
     img_array[:, :, 2] += 123.68 / 255.
 
-    return img_array
+    return img_array * 255.
