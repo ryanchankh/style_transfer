@@ -6,6 +6,20 @@ from vgg.vgg import VGG19
 #from vgg.vgg_mat import VGG19
 
 class StyleTransfer():
+    """Style Transfer Model.
+
+    @params:
+        init_ing: Initial Image. Training initialized with this image.
+        cont_img: Content Image.
+        styl_img: Style Image.
+        cont_layers: Layers chosen for content activity.
+        styl_layers: Layers chose for style activity.
+        cont_weights: Weights for each content activity layer.
+        styl_weights: Weights for each style activity layer.
+        alpha: learning rate/trade-off for content loss.
+        beta: learning rate/trade-off for styl_loss.
+    """
+
     def __init__(self, init_img, cont_img, styl_img, cont_layers, styl_layers, cont_weights, styl_weights, alpha, beta):
         self.init_img = init_img
         self.cont_img = cont_img
@@ -25,6 +39,8 @@ class StyleTransfer():
         self.step = 0
 
     def build_graph(self):
+        """Tensorflow graph. Precomputes content and style activity for training."""
+
         with tf.Graph().as_default() as graph:
             with tf.name_scope("inputs") as scope:
                 self.image = tf.Variable(self.init_img, trainable=True, dtype=tf.float32)
@@ -32,16 +48,11 @@ class StyleTransfer():
             with tf.name_scope("activitiy") as scope:
                 self.styl_act = self.vgg.build(self.styl_img).layer_dict(self.styl_layers)
                 self.styl_gram = {l: self._gram(self.styl_act[l]) for l in self.styl_layers}
-                #self.styl_gram2 = {l: self.naive_gram(self.styl_act[l]) for l in self.styl_layers}
                 self.cont_act = self.vgg.build(self.cont_img).layer_dict(self.cont_layers)
 
                 img_model = self.vgg.build(self.image)
-            with tf.name_scope("styl_act") as scope:
-                styl_model = VGG19().build(self.image)
-                self.gen_styl_act = styl_model.layer_dict(self.styl_layers)
-            with tf.name_scope("cont_act") as scope:
-                cont_model = VGG19().build(self.image)
-                self.gen_cont_act = cont_model.layer_dict(self.cont_layers)
+                self.gen_styl_act = img_model.layer_dict(self.styl_layers)
+                self.gen_cont_act = img_model.layer_dict(self.cont_layers)
 
             with tf.name_scope("cont_loss") as scope:
                 self.cont_loss = 0.
@@ -74,6 +85,8 @@ class StyleTransfer():
             return graph
 
     def step_callback(self, img_shape, save_per_step):
+        """Optimizer member function. Higher order function called from main.py"""
+
         step_folder = "./step_folder/"
         def helper(image):
             if self.step % save_per_step == 0:
@@ -84,8 +97,10 @@ class StyleTransfer():
         return helper
 
     def loss_callback(self):
-        def helper(styl_loss, cont_loss, total_loss, 
-                   styl_loss_list, cont_loss_list, gen_cont_act, gen_styl_act, 
+        """Optimizer member function. Higher order function called from main.py"""
+
+        def helper(styl_loss, cont_loss, total_loss,
+                   styl_loss_list, cont_loss_list, gen_cont_act, gen_styl_act,
                    styl_act, cont_act, image):
             print("Step: {}\tStyle Loss: {}\tContent Loss: {}\tTotal Loss: {}".format(self.step, styl_loss, cont_loss, total_loss))
             print("styl_loss_list: {}".format(styl_loss_list))
@@ -109,18 +124,8 @@ class StyleTransfer():
 
 
     def _gram(self, features):
+        """Computes Gram matrix. Outputs (channel, channel) matrix."""
         _, h, w, c = features.get_shape()
         features_t = tf.transpose(features, perm=(0, 3, 1, 2))
         matrix = tf.reshape(features_t, shape=[c.value, h.value*w.value])
         return tf.matmul(matrix, matrix, transpose_b=True)
-
-    def naive_gram(self, features):
-        _, h, w, c = features.get_shape()
-        gram = []
-        for i in np.arange(c.value):
-            for j in np.arange(c.value):
-                Fi = tf.reshape(features[0, :, :, i], shape=[-1])
-                Fj = tf.reshape(features[0, :, :, j], shape=[-1])
-                gram_ij = tf.tensordot(Fi, Fj, 1)
-                gram.append(gram_ij)
-        return tf.reshape(gram, (c.value, c.value))
