@@ -7,6 +7,21 @@ import skimage.transform
 import tensorflow as tf
 
 def load_image(path, img_shape=None):
+    """Load image from file. """
+    img_array = skimage.io.imread(path)
+
+    if img_shape is not None:
+        img_shape = img_shape[1:3]
+        img_array = skimage.transform.resize(img_array, img_shape, mode="constant") * 255.
+
+    assert np.amin(img_array) >= 0
+    assert np.amin(img_array) <= 255.
+
+    return np.float32(img_array)
+
+
+def load_image2(path, img_shape=None):
+    """Load image from file."""
     img_array = skimage.io.imread(path)
 
     if img_shape is not None:
@@ -14,8 +29,11 @@ def load_image(path, img_shape=None):
         img_array = skimage.transform.resize(img_array, img_shape, mode="constant")
     else:
         img_array = img_array / 255.
-    img_array = np.float32(img_array) * 255
-    return img_array
+
+    assert np.amin(img_array) >= 0
+    assert np.amax(img_array) <= 1
+
+    return np.float32(img_array)
 
 def load_init_image(cont_img, styl_img, img_shape, choice=""):
     if choice == "cont":
@@ -27,7 +45,18 @@ def load_init_image(cont_img, styl_img, img_shape, choice=""):
     else:
         return np.float32(np.random.uniform(0, 255, size=img_shape[1:]))
 
+def load_init_image2(cont_img, styl_img, img_shape, choice=""):
+    if choice == "cont":
+        return cont_img.copy()
+    elif choice == "styl":
+        return styl_img.copy()
+    elif choice == "white":
+        return np.zeros(img_shape[1:], dtype=np.float32) + 1
+    else:
+        return np.float32(np.random.uniform(0, 1, size=img_shape[1:]))
+
 def optimal_dimension(cont_path, square=False):
+    """Outputs the image shape of content image. """
     full_shape = skimage.io.imread(cont_path).shape
     height, width, channel = full_shape[0], full_shape[1], full_shape[2]
 
@@ -51,11 +80,7 @@ def img_preprocess(img_array):
     img_array = np.expand_dims(img_array, 0)
 
     # subtract mean pixel values
-    #img_array[:, :, :, 0] -= 103.939 / 255.
-    #img_array[:, :, :, 1] -= 116.779 / 255.
-    #img_array[:, :, :, 2] -= 123.68 / 255.
-
-    img_array[:, :, :, 0] -= 103.939 
+    img_array[:, :, :, 0] -= 103.939
     img_array[:, :, :, 1] -= 116.779
     img_array[:, :, :, 2] -= 123.68
 
@@ -72,12 +97,36 @@ def img_postprocess(img_array):
     img_array = img_array[:, :, ::-1]
 
     # add mean pixel values to img_array
-#    img_array[:, :, 0] += 103.939 / 255.
-#    img_array[:, :, 1] += 116.779 / 255.
-#    img_array[:, :, 2] += 123.68 / 255.
-
-    img_array[:, :, 0] += 103.939 
+    img_array[:, :, 0] += 103.939
     img_array[:, :, 1] += 116.779
     img_array[:, :, 2] += 123.68
+
+    return img_array
+
+def img_preprocess2(img_array):
+    # add batch dimension to image
+    img_array = np.expand_dims(img_array, 0)
+
+    # subtract mean pixel values
+    img_array[:, :, :, 0] -= 103.939 / 255.
+    img_array[:, :, :, 1] -= 116.779 / 255.
+    img_array[:, :, :, 2] -= 123.68 / 255.
+
+    # convert RGB to BGR
+    img_array = img_array[:, :, :, ::-1]
+
+    return img_array
+
+def img_postprocess2(img_array):
+    # make copy of reference array and reduce dimension
+    img_array = np.copy(img_array[0])
+
+    # convert back from BGR to RGB
+    img_array = img_array[:, :, ::-1]
+
+    # add mean pixel values to img_array
+    img_array[:, :, 0] += 103.939 / 255.
+    img_array[:, :, 1] += 116.779 / 255.
+    img_array[:, :, 2] += 123.68 / 255.
 
     return img_array
