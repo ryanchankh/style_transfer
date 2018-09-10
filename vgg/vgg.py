@@ -1,11 +1,17 @@
 import tensorflow as tf
 import numpy as np
 
-VGG_MEAN = [103.939, 116.779, 123.68]
-
 class VGG19():
-    # Input should be an rgb image [batch, height, width, 3]
-    # values scaled [0, 1]
+    """VGG19 Convolutional Neural Network.
+
+    Note on Input Image:
+        + Input image should be preprocessed by:
+            1) Flip RGB to BGR channel orders
+            2) subtracted by mean pixel value.
+        + Input dimension should be [batch, height, width, 3].
+
+    Weights' values range [0, 1].
+    """
     def __init__(self, vgg19_npy_path="./vgg/vgg19.npy"):
         self.data_dict = np.load(vgg19_npy_path, encoding='latin1').item()
 
@@ -38,9 +44,13 @@ class VGG19():
         return self
 
     def layer_dict(self, layer_list=None):
-        """
-        A dictionary of the activations of each layer.
-        layer_list: if specified, return the layers in layer_list
+        """A dictionary of the activations of each layer.
+
+        @params:
+            layer_list: if specified, return the layers in layer_list (Defult: None)
+
+        @return:
+            activations: {layer_name: activated layer}
         """
 
         result = {}
