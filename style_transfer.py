@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+
 import numpy as np
 import tensorflow as tf
 
@@ -96,8 +98,9 @@ class StyleTransfer():
                 utils.save_image(step_folder, image, self.step)
                 print("Image saved.")
 
-            if self.step % 200 == 0:
-                with open("./log/loss.log", "w") as file:
+            if self.step % 10 == 0:
+                filename = "./log/loss_" + str(self.step) + "_" + datetime.now().strftime("%H%M%S_%Y%m%d")  +".log",
+                with open(filename) as file:
                     string = json.dumps(self.loss_track, indent=2)
                     file.write(string)
         return helper
