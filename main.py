@@ -19,9 +19,9 @@ folder = "./gen_img/"
 
 # hyper-parameters
 #img_shape = utils.optimal_dimension(cont_path, square=False) # [batch, width, height, channels]
-img_shape = np.array([1, 300, 300, 3])
+img_shape = np.array([1, 224, 224, 3])
 alpha = 1e-3                    # content weight alpha
-beta = 0                        # style weight beta
+beta = 1                        # style weight beta
 num_steps = 10000               # training iterations
 save_per_step = 10              # save image per this number of step
 

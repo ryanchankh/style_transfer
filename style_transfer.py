@@ -96,7 +96,7 @@ class StyleTransfer():
                 utils.save_image(step_folder, image, self.step)
                 print("Image saved.")
 
-            if self.step % 3 == 0:
+            if self.step % 200 == 0:
                 with open("./log/loss.log", "w") as file:
                     string = json.dumps(self.loss_track, indent=2)
                     file.write(string)

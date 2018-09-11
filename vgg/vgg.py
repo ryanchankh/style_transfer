@@ -16,8 +16,8 @@ class VGG19():
         self.data_dict = np.load(vgg19_npy_path, encoding='latin1').item()
 
     def build(self, rgb):
-        self.conv1_1 = self.conv_layer(rgb*255, "conv1_1")
-#        self.conv1_1 = self.conv_layer(rgb, "conv1_1")
+#        self.conv1_1 = self.conv_layer(rgb*255, "conv1_1")
+        self.conv1_1 = self.conv_layer(rgb, "conv1_1")
         self.conv1_2 = self.conv_layer(self.conv1_1, "conv1_2")
         self.pool1 = self.avg_pool(self.conv1_2, 'pool1')
 
