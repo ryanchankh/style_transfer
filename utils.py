@@ -108,9 +108,9 @@ def img_preprocess2(img_array):
     img_array = np.expand_dims(img_array, 0)
 
     # subtract mean pixel values
-    img_array[:, :, :, 0] -= 103.939 / 255.
-    img_array[:, :, :, 1] -= 116.779 / 255.
-    img_array[:, :, :, 2] -= 123.68 / 255.
+    img_array[:, :, :, 0] -= (103.939 / 255.)
+    img_array[:, :, :, 1] -= (116.779 / 255.)
+    img_array[:, :, :, 2] -= (123.680 / 255.)
 
     # convert RGB to BGR
     img_array = img_array[:, :, :, ::-1]
@@ -125,8 +125,8 @@ def img_postprocess2(img_array):
     img_array = img_array[:, :, ::-1]
 
     # add mean pixel values to img_array
-    img_array[:, :, 0] += 103.939 / 255.
-    img_array[:, :, 1] += 116.779 / 255.
-    img_array[:, :, 2] += 123.68 / 255.
+    img_array[:, :, 0] += (103.939 / 255.)
+    img_array[:, :, 1] += (116.779 / 255.)
+    img_array[:, :, 2] += (123.680 / 255.)
 
     return img_array * 255.

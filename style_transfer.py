@@ -82,7 +82,7 @@ class StyleTransfer():
                     self.styl_loss_list.append(layer_loss)
                     self.styl_loss += layer_loss
 
-            with tf.variable_scope("losses") as scope:
+            with tf.name_scope("losses") as scope:
                 self.total_loss = self.alpha * self.cont_loss + self.beta * self.styl_loss
 
             return graph
@@ -98,7 +98,7 @@ class StyleTransfer():
                 utils.save_image(step_folder, image, self.step)
                 print("Image saved.")
 
-            if self.step % 3 == 0:
+            if self.step % 500 == 0:
                 filename = "./step_folder/loss_" + str(self.step) + "_" + datetime.now().strftime("%H%M%S_%Y%m%d")  +".log"
                 with open(filename, "w+") as file:
                     string = json.dumps(self.loss_track, indent=2)
