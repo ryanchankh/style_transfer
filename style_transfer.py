@@ -8,7 +8,7 @@ from vgg.vgg import VGG19
 class StyleTransfer():
     """Style Transfer Model.
 
-    @params:
+    @param:
         init_ing: Initial Image. Training initialized with this image.
         cont_img: Content Image.
         styl_img: Style Image.
@@ -47,7 +47,7 @@ class StyleTransfer():
 
             with tf.name_scope("activitiy") as scope:
                 self.styl_act = self.vgg.build(self.styl_img).layer_dict(self.styl_layers)
-                self.styl_gram = {l: self._gram(self.styl_act[l]) for l in self.styl_layers}
+                self.styl_gram = {l: self._gram(self.styl_act[l] / tf.reduce_mean(self.styl_act[l])) for l in self.styl_layers}
                 self.cont_act = self.vgg.build(self.cont_img).layer_dict(self.cont_layers)
 
                 img_model = self.vgg.build(self.image)
@@ -58,8 +58,8 @@ class StyleTransfer():
                 self.cont_loss = 0.
                 self.cont_loss_list = []
                 for l in self.cont_layers:
-                    P = self.cont_act[l]
-                    F = self.gen_cont_act[l]
+                    P = self.cont_act[l] / tf.reduce_mean(self.cont_act[l])
+                    F = self.gen_cont_act[l] / tf.reduce_mean(self.gen_cont_act[l])
                     w = self.cont_weights[l]
                     layer_loss = w * (1. / 2.) * tf.reduce_sum(tf.pow((F - P), 2))
                     self.cont_loss_list.append(layer_loss)
@@ -73,7 +73,7 @@ class StyleTransfer():
                     M = h.value * w.value
                     N = c.value
                     A = self.styl_gram[l]
-                    G = self._gram(self.gen_styl_act[l])
+                    G = self._gram(self.gen_styl_act[l] / tf.reduce_mean(self.gen_styl_act[l]))
                     lw = self.styl_weights[l]
                     layer_loss = lw * (1. / (4. * M**2 * N**2)) * tf.reduce_sum(tf.pow((G - A), 2))
                     self.styl_loss_list.append(layer_loss)

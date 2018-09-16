@@ -28,7 +28,7 @@ save_per_step = 10              # save image per this number of step
 # content and style layers used in style transfer
 cont_layers = ["conv4_2"]
 styl_layers = ["conv1_1", "conv2_1", "conv3_1", "conv4_1", "conv5_1"]
-#cont_layers = ["relu4_2"]
+#cont_layers = ["relu4_2"] # for matlab vgg
 #styl_layers = ["relu1_1", "relu2_1", "relu3_1", "relu4_1", "relu5_1"]
 
 # weights on each style layer
