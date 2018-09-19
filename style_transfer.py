@@ -5,13 +5,13 @@ import numpy as np
 import tensorflow as tf
 
 import utils
-from vgg.vgg import VGG19
-#from vgg.vgg_mat import VGG19
+#from vgg.vgg import VGG19
+from vgg.vgg_mat import VGG19
 
 class StyleTransfer():
     """Style Transfer Model.
 
-    @params:
+    @param:
         init_ing: Initial Image. Training initialized with this image.
         cont_img: Content Image.
         styl_img: Style Image.
@@ -50,7 +50,7 @@ class StyleTransfer():
 
             with tf.name_scope("activitiy") as scope:
                 self.styl_act = self.vgg.build(self.styl_img).layer_dict(self.styl_layers)
-                self.styl_gram = {l: self._gram(self.styl_act[l] / tf.reduce_mean(self.styl_act[l])) for l in self.styl_layers}
+                self.styl_gram = {l: self._gram(self.styl_act[l]) for l in self.styl_layers}
                 self.cont_act = self.vgg.build(self.cont_img).layer_dict(self.cont_layers)
 
                 img_model = self.vgg.build(self.image)
@@ -61,12 +61,13 @@ class StyleTransfer():
                 self.cont_loss = 0.
                 self.cont_loss_list = []
                 for l in self.cont_layers:
-                    P = self.cont_act[l] / tf.reduce_mean(self.cont_act[l])
-                    F = self.gen_cont_act[l] / tf.reduce_mean(self.cont_act[l])
+                    P = self.cont_act[l]
+                    F = self.gen_cont_act[l]
                     w = self.cont_weights[l]
-                    layer_loss = w * (1. / 2.) * tf.reduce_sum(tf.pow((F - P), 2))
-                    self.cont_loss_list.append(layer_loss)
-                    self.cont_loss += layer_loss
+#                    cont_layer_loss = w * tf.reduce_sum(tf.pow((F - P), 2)) / 2
+                    cont_layer_loss = w * (2 * tf.nn.l2_loss(F - P) / tf.size(P, out_type=tf.float32))
+                    self.cont_loss_list.append(cont_layer_loss)
+                    self.cont_loss += cont_layer_loss
 
             with tf.name_scope("styl_loss") as scope:
                 self.styl_loss = 0.
@@ -76,11 +77,12 @@ class StyleTransfer():
                     M = h.value * w.value
                     N = c.value
                     A = self.styl_gram[l]
-                    G = self._gram(self.gen_styl_act[l] / tf.reduce_mean(self.styl_act[l]))
+                    G = self._gram(self.gen_styl_act[l])
                     lw = self.styl_weights[l]
-                    layer_loss = lw * (1. / (4. * M**2 * N**2)) * tf.reduce_sum(tf.pow((G - A), 2))
-                    self.styl_loss_list.append(layer_loss)
-                    self.styl_loss += layer_loss
+#                    styl_layer_loss = lw / (4. * M**2 * N**2) * tf.reduce_sum(tf.pow((G - A), 2))
+                    styl_layer_loss = lw * (2 * tf.nn.l2_loss(G - A) / tf.size(G, out_type=tf.float32) )
+                    self.styl_loss_list.append(styl_layer_loss)
+                    self.styl_loss += styl_layer_loss
 
             with tf.name_scope("losses") as scope:
                 self.total_loss = self.alpha * self.cont_loss + self.beta * self.styl_loss
@@ -94,7 +96,7 @@ class StyleTransfer():
         def helper(image):
             if self.step % save_per_step == 0:
                 image = np.reshape(image, img_shape)
-                image = utils.img_postprocess2(image)
+                image = utils.img_postprocess(image)
                 utils.save_image(step_folder, image, self.step)
                 print("Image saved.")
 
@@ -152,4 +154,4 @@ class StyleTransfer():
         _, h, w, c = features.get_shape()
         features_t = tf.transpose(features, perm=(0, 3, 1, 2))
         matrix = tf.reshape(features_t, shape=[c.value, h.value*w.value])
-        return tf.matmul(matrix, matrix, transpose_b=True)
+        return tf.matmul(matrix, matrix, transpose_b=True) / tf.size(matrix, out_type=tf.float32)
