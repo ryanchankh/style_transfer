@@ -65,7 +65,7 @@ class StyleTransfer():
                     F = self.gen_cont_act[l]
                     w = self.cont_weights[l]
 #                    cont_layer_loss = w * tf.reduce_sum(tf.pow((F - P), 2)) / 2
-                    cont_layer_loss = w * (2 * tf.nn.l2_loss(F - P) / tf.size(P, out_type=tf.float32))
+                    cont_layer_loss = w * (tf.nn.l2_loss(F - P) / tf.size(P, out_type=tf.float32))
                     self.cont_loss_list.append(cont_layer_loss)
                     self.cont_loss += cont_layer_loss
 
@@ -79,8 +79,8 @@ class StyleTransfer():
                     A = self.styl_gram[l]
                     G = self._gram(self.gen_styl_act[l])
                     lw = self.styl_weights[l]
-#                    styl_layer_loss = lw / (4. * M**2 * N**2) * tf.reduce_sum(tf.pow((G - A), 2))
-                    styl_layer_loss = lw * (2 * tf.nn.l2_loss(G - A) / tf.size(G, out_type=tf.float32) )
+                    styl_layer_loss = lw / (4. * M**2 * N**2) * tf.reduce_sum(tf.pow((G - A), 2))
+#                    styl_layer_loss = lw * (2 * tf.nn.l2_loss(G - A) / tf.size(G, out_type=tf.float32) )
                     self.styl_loss_list.append(styl_layer_loss)
                     self.styl_loss += styl_layer_loss
 
@@ -154,4 +154,4 @@ class StyleTransfer():
         _, h, w, c = features.get_shape()
         features_t = tf.transpose(features, perm=(0, 3, 1, 2))
         matrix = tf.reshape(features_t, shape=[c.value, h.value*w.value])
-        return tf.matmul(matrix, matrix, transpose_b=True) / tf.size(matrix, out_type=tf.float32)
+        return tf.matmul(matrix, matrix, transpose_b=True)
