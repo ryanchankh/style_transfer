@@ -1,5 +1,5 @@
 # Style Transfer using Convolutional Neural Network
-###### Ryan Chan
+###### Ryan Chan (With great help from Dylan Paiton) 
 ###### Last Updated: 17 October 2018
 
 
@@ -15,9 +15,10 @@ This is my first project look in-depth into an academic paper and attempt to imp
 ## Model Structure and the Flow of Information
 #### Preprocess
 1. style image is rescaled to be the same size as content image. 
-2. Both image are passed into the VGG network, and activation maps from specific layers are extracted. 
-3. For activation maps from style image, we pre-compute each layer's gram matrix.
-4. A random image is generated, ready to be synthesized updated at each iteration. This is our only variable that is trained. 
+2. When images are loaded, mean pixel values are subtracted from them such that their pixel values are centered at 0. This is due to the properties of the weights in our VGG Network, and the use of gram matrix requires values to be centered at 0. 
+3. Both image are passed into the VGG network, and activation maps from specific layers are extracted. 
+4. For activation maps from style image, we pre-compute each layer's gram matrix.
+5. A random image is generated, ready to be synthesized updated at each iteration. This is our only variable that is trained. 
 
 #### Generating result
 1. Each iteration, we pass in the random image to obtain the same layers of activation maps we chose for content and style.
@@ -60,14 +61,22 @@ Style Layers: `conv4_2`<br>
 ## Future Work
 **Definition of Representation.** One advantanges of using neural networks on images is that there already exist perhaps the most useful and direct way to represent an image using numbers - pixel values. But this representation is not necessarily the only way to represent visual content. If there exist a different kind of "embedding" that encodes objects or relationship between pixels in a different way, content and style representation might change the way style transfer model defines the relationship between objects, or even color. 
 
-**Autoencoders and Compression
-
-**CNNs to Other Types of Neural Nets.** One inspiration of Convolutional Neural Networks is the hierachical structure of simple cells and complex cells in the human visual cortex. Layer by layer, using convolution operation, an artifical neuron serves as a computing unit that summaries information from previous layer and compresses into a smaller space, which is then passsed onto the later layers. This type of model is one of many ways of compressing into a more meaningful and less redundant representation. Other type
+**CNNs to Other Types of Neural Nets.** One inspiration of Convolutional Neural Networks is the hierachical structure of simple cells and complex cells in the human visual cortex. Layer by layer, using convolution operation, an artifical neuron serves as a computing unit that summaries information from previous layer and compresses into a smaller space, which is then passsed onto the later layers. This type of model is one of many ways of compressing into a more meaningful and less redundant representation. Other models for compression includes autoencoders, which requires information to be passed down a smaller dimension and projected into a larger dimension again. Compression problems might shed insights on how information is embedded efficiently. 
 
 **Losses and differences.** The current style transfer model utilizes mean square error, which computes the difference between pixel values from the content or style image and the synthsized image. From a mathematical point of view, this seems logical and reasonable. But, a difference in pixel value may not necessarily imply a difference in content or style. For instance, if we were to create a synthsized image that is more invariant to the position of objects in our synthesized image, calculate the exact difference in pixel at each coordinate would not be sensible. In other words, the definition of loss when considering objects may require a much more extensive function than computing losses. 
 
 ## Further Readings
-		
+1. Jing et al. 2018. Neural Style Transfer: A Review. <br>
+https://arxiv.org/pdf/1705.04058.pdf <br>
+https://github.com/ycjing/Neural-Style-Transfer-Papers <br> 
+This github repository and paper provides a general overview of other posibilities of style transfer. There are now different branches of style transfer, while some focuses more on keeping the content and some focuses on keeping the style. There are also improvements in different aspects, such as training speed, or time-varying style transfers. 
+
+2. Johnson et at. 2016. Perceptual Loss for Real-Time Style Transfer and Super-Resolution. <br>
+https://arxiv.org/pdf/1603.08155.pdf<br>
+I tried out certain layers chosen from this paper. And the results did not vary too much from the original paper. 
+
+ 
+
 
 ## References
 Gatys, Leon A., Alexander S. Ecker, and Matthias Bethge. 2016. “Image Style Transfer Using Convolutional Neural Networks.” 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR). doi:10.1109/cvpr.2016.265.
