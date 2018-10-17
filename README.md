@@ -1,5 +1,6 @@
 # Style Transfer using Convolutional Neural Network
-###### Ryan Chan Last Updated: 17 October 2018
+###### Ryan Chan
+###### Last Updated: 17 October 2018
 
 
 ## Motivation
@@ -12,16 +13,18 @@ The artistic and imaginative side of human is known to be one of the most challe
 This is my first project look in-depth into an academic paper and attempt to implement the model from scratch. Because it was widely used to illustrate what neural networks can do, artistic style transfer remains as one of the most interesting beginner projects. I am doing this to cultivate my extensive and critical thinking sills, and also understand the model thoroughly, to the extent where I have no doubt if asked to explain how it works from zero to a hundred. 
 
 ## Model Structure and the Flow of Information
-_Given a content image and a style image, how does the style transfer model generate a synthsized image?_
+#### Preprocess
+1. style image is rescaled to be the same size as content image. 
+2. Both image are passed into the VGG network, and activation maps from specific layers are extracted. 
+3. For activation maps from style image, we pre-compute each layer's gram matrix.
+4. A random image is generated, ready to be synthesized updated at each iteration. This is our only variable that is trained. 
 
-First, the style image is rescaled to be the same size as the content image. Both are passed into a pre-trained VGG Network, the activations of specific layers are extracted as constants. For style image, we pre-computed the gram matrix for each style activation. Then, we initialize a tensorflow variable with a random image that has the same size as the content image. We also build the tensorflow graph that defines the strucutre for how content loss and style loss is computed. Then, the image is updated iteratively by computing the gradient of scaled content and style losss combined. 
-
-_How are style loss and content loss computed?_
-
-The paper defines the style loss to be $$L_{\text{style}} = $$
-
-and content loss to be $$L_{\text{content}}$$
-
+#### Generating result
+1. Each iteration, we pass in the random image to obtain the same layers of activation maps we chose for content and style.
+2. We then compute the content loss, which is the mean square error between the activation maps of the content image and that of the sythesized image.
+3. Similarily, the style loss is the mean square error between the gram matrix of the activation maps of the content image and that of the sythesized image. Gram matrix can be interpreted as computing the covariance between each pixel. 
+4. The content loss and style loss is then added up together, becoming the total loss. Our objective then is the minimize this loss. 
+5. At each iteration, the random image is updated such that it converges to a synthesized image. 
 
 ## Replication of Figures
 ### Figure 1 - Image Representations in a Convolutional Neural Network
