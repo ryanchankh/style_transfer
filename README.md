@@ -1,9 +1,15 @@
 # Style Transfer using Convolutional Neural Network
-###### Ryan Chan Last Updated: 3 October 2018
+###### Ryan Chan Last Updated: 17 October 2018
 
 
 ## Motivation
+#### Research Motivation
+Layers in neural network contains useful information. For example, one can use convolutional operation to reduce the dimension of the data, while embedding common information between each layer. Formerly known actviation maps, they contain useful presentations that can be processed for further purpose. Artistic Style Transfer is one of many examples that utilizes actvations in convolutional neural networks. This project sets to explore activation maps further. 
 
+#### Personal Motivation
+The artistic and imaginative side of human is known to be one of the most challenging perspective of life to model. Due to its free form and huamnly-cultivated experience, art is often appreciated not only because of its visual apperance, but also the history and motivations of the artist. In this project, I attempt to answer this question: "If we were to create a model that creates art, how would it do it, and what separates that from human life?" 
+
+This is my first project look in-depth into an academic paper and attempt to implement the model from scratch. Because it was widely used to illustrate what neural networks can do, artistic style transfer remains as one of the most interesting beginner projects. I am doing this to cultivate my extensive and critical thinking sills, and also understand the model thoroughly, to the extent where I have no doubt if asked to explain how it works from zero to a hundred. 
 
 ## Model Structure and the Flow of Information
 _Given a content image and a style image, how does the style transfer model generate a synthsized image?_
@@ -23,7 +29,7 @@ and content loss to be $$L_{\text{content}}$$
 **Content Reconstruction.**
 The following figures are created with `alpha = 1, beta = 0`.
 
-|<img src="images/figures/fig1/conv1.jpg" alt="fig1_cont1">|<img src="images/figures/fig1/cont2.jpg" alt="fig1_cont2">|<img src="images/figures/fig1/cont3.jpg" alt="fig1_cont3">|<img src="images/figures/fig1/cont4.jpg" alt="fig1_cont4">|<img src="images/figures/fig1/cont5.jpg" alt="fig1_cont5">|
+|<img src="images/figures/fig1/cont1.jpg" alt="fig1_cont1">|<img src="images/figures/fig1/cont2.jpg" alt="fig1_cont2">|<img src="images/figures/fig1/cont3.jpg" alt="fig1_cont3">|<img src="images/figures/fig1/cont4.jpg" alt="fig1_cont4">|<img src="images/figures/fig1/cont5.jpg" alt="fig1_cont5">|
 |:---:|:---:|:---:|:---:|:---:|
 |`conv1_1`|`conv2_1`|`conv3_1`|`conv4_1`|`conv5_1`|
 
@@ -33,6 +39,19 @@ The following figures are created with `alpha = 0, beta = 1`.
 |<img src="images/figures/fig1/styl1.jpg" alt="fig1_styl1">|<img src="images/figures/fig1/styl2.jpg" alt="fig1_styl2">|<img src="images/figures/fig1/styl3.jpg" alt="fig1_styl3">|<img src="images/figures/fig1/styl4.jpg" alt="fig1_styl4">|<img src="images/figures/fig1/styl5.jpg" alt="fig1_styl5">|
 |:---:|:---:|:---:|:---:|:---:|
 |`conv1_1`|`conv1_1`<br>`conv2_1`|`conv1_1`<br>`conv2_1`<br>`conv3_1`|`conv1_1`<br>`conv2_1`<br>`conv3_1`<br>`conv4_1`|`conv1_1`<br>`conv2_1`<br>`conv3_1`<br>`conv4_1`<br>`conv5_1`|
+
+### Figure 3 - Well-known Artwork examples
+The following figures are created with: <br>
+Weights:  `alpha = 1e-6, beta = 1` <br>
+Content Layers: `conv1_1, conv2_1, conv3_1, conv4_1, conv5_1`<br>
+Style Layers: `conv4_2`<br>
+
+|<img src="images/figures/fig2/shipwreck.jpg" alt="fig1_cont1">|<img src="images/style/shipwreck.jpg">|
+|:---:|:---:|
+|<img src="images/figures/fig2/starry_night.jpg" alt="fig1_cont1">|<img src="images/style/starry_night.jpg">|
+|<img src="images/figures/fig2/scream.jpg" alt="fig1_cont1">|<img src="images/style/scream.jpg">|
+|<img src="images/figures/fig2/femme_nue_assise.jpg" alt="fig1_cont1">|<img src="images/style/assise.jpg">|
+|<img src="images/figures/fig2/composition.jpg" alt="fig1_cont1">|<img src="images/style/composition.jpg">|
 
 
 ## Future Work
