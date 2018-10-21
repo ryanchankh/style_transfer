@@ -1,8 +1,10 @@
 # Style Transfer using Convolutional Neural Network
-###### Ryan Chan (With great help from Dylan Paiton) , Last Updated: 20 October 2018
+###### Author: Ryan Chan, Last Updated: 20 October 2018
+
 
 ## Motivation
 Layers in neural network contains useful information. For example, one can use convolutional operation to reduce the dimension of the data, while embedding common information between each layer. Formerly known actviation maps, they contain useful presentations that can be processed for further purpose. Artistic Style Transfer is one of many examples that utilizes actvations in convolutional neural networks (VGG19) (Simonyan, K., & Zisserman, A. 2014) to produce useful results. This project sets to explore activation maps further. 
+
 
 ## Instruction for Testing and Producing Results
 #### VGG weights
@@ -25,6 +27,7 @@ To run the model, run in command line
 python3 main.py
 ```
 
+
 ## Model Structure and the Flow of Information
 ### Preprocess
 1. style image is rescaled to be the same size as content image. 
@@ -43,6 +46,7 @@ python3 main.py
 5. The content loss and style loss are multipled by their respective tradeoffs, is then added up together, becoming the total loss. 
 
 6. At each iteration, the random image is updated such that it converges to a synthesized image. Our model uses L-BFGS algorithm to mimize the loss. 
+
 
 ## Replication of Figures in Paper
 ### Figure 1 - Image Representations in a Convolutional Neural Network
@@ -87,6 +91,7 @@ A subtle difference between Leon's original implementation and this version is t
 
 **Losses and differences.** The current style transfer model utilizes mean square error, which computes the difference between pixel values from the content or style image and the synthsized image. From a mathematical point of view, this seems logical and reasonable. But, a difference in pixel value may not necessarily imply a difference in content or style. For instance, if we were to create a synthsized image that is more invariant to the position of objects in our synthesized image, calculate the exact difference in pixel at each coordinate would not be sensible. In other words, the definition of loss when considering objects may require a much more extensive function than computing losses. 
 
+
 ## Further Readings
 1. Jing et al. 2018. Neural Style Transfer: A Review. <a href="https://arxiv.org/pdf/1705.04058.pdf">Link to Paper</a> <a href="https://github.com/ycjing/Neural-Style-Transfer-Papers">Link to Github</a> <br>
 This github repository and paper provides a general overview of other posibilities of style transfer. There are now different branches of style transfer, while some focuses more on keeping the content and some focuses on keeping the style. There are also improvements in different aspects, such as training speed, or time-varying style transfers. 
@@ -94,6 +99,7 @@ This github repository and paper provides a general overview of other posibiliti
 2. Johnson et at. 2016. Perceptual Loss for Real-Time Style Transfer and Super-Resolution. 
 <a href="https://arxiv.org/pdf/1603.08155.pdf">Link to Paper</a> <br>
 One potential change to Leon's model is to use the configurations that Johnson used in this paper. The similar result can be reproduced. 
+
 
 ## Other Github references
 Throughout this project, I visited a few other implementations that provided me great insight to how to implement the style transfer model in a more efficient and neat way. The following is a list that I referenced. 
@@ -109,12 +115,16 @@ Throughout this project, I visited a few other implementations that provided me 
 As mentioned earlier, there is a slight difference in my implementation compared to the original implementation. I was trying to find one that exactly follows the original implementation, but most of them either also changes some settings on their own or implementations concurrently with other versions of style transfer.
 
 
+## Acknowledgement
+I would like to devote my sincere gratitude to my mentor Dylan Paiton at UC Berkeley for the support he has given. Much of this would not be possible without he continually mental and technical support. I have learned a great deal about neural networks and neuroscience through discussions and weekly meetings, and I look forward to the more research in the future. 
+
+
 ## Paper References
 Gatys, L. A., Ecker, A. S., & Bethge, M. (2015). A neural algorithm of artistic style. arXiv preprint arXiv:1508.06576.
 
-Gatys, L. A., Ecker, A. S., & Bethge, M. (2016). Image style transfer using convolutional neural networks. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 2414-2423).
-
 Simonyan, K., & Zisserman, A. (2014). Very deep convolutional networks for large-scale image recognition. arXiv preprint arXiv:1409.1556.
+
+Gatys, L. A., Ecker, A. S., & Bethge, M. (2016). Image style transfer using convolutional neural networks. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 2414-2423).
 
 
 ## Personal Note
