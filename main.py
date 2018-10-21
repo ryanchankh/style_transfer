@@ -19,7 +19,6 @@ folder = "./gen_img/"
 
 # hyper-parameters
 img_shape = utils.optimal_dimension(cont_path, square=False) 	# [batch, width, height, channels]
-img_shape = (1, 224, 224, 3)
 alpha = 1e-6                    								# content weight alpha
 beta = 1                        								# style weight beta
 num_steps = 1000               									# training iterations
