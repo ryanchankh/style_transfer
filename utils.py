@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 import numpy as np
 import skimage
@@ -44,6 +45,9 @@ def optimal_dimension(cont_path, square=False):
 def save_image(path, img_array, step=None):
     '''Saves image to file.'''
     img_array = np.clip(img_array, 0, 255).astype('uint8')
+
+    if not os.path.exists(path):
+        os.mkdir(path)
 
     if step is None:
         file_name = path + datetime.now().strftime("%H%M%S_%Y%m%d") + ".jpg"

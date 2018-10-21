@@ -21,8 +21,8 @@ folder = "./gen_img/"
 img_shape = utils.optimal_dimension(cont_path, square=False) 	# [batch, width, height, channels]
 alpha = 1e-6                    								# content weight alpha
 beta = 1                        								# style weight beta
-num_steps = 1000               									# training iterations
-save_per_step = -1              								# save image per this number of step
+num_steps = 10               									# training iterations
+save_per_step = 5              								# save image per this number of step
 
 # content and style layers used in style transfer
 cont_layers = ["relu4_2"] # for matlab vgg

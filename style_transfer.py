@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import tensorflow as tf
 
@@ -88,6 +90,9 @@ class StyleTransfer():
         save_per_step to less than 1."""
 
         step_folder = "./step_folder/"
+        if not os.path.exists(step_folder):
+            os.mkdir(step_folder)
+
         def helper(image):
             if save_per_step < 1:
                 return
