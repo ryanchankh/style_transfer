@@ -122,7 +122,7 @@ class StyleTransfer():
             #for l in self.cont_layers:
             #    print("Layer: {}".format(l))
             #    print(cont_loss_list[0])
-            #self.step += 1
+            self.step += 1
         return helper
 
 
