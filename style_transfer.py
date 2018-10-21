@@ -85,10 +85,14 @@ class StyleTransfer():
             return graph
 
     def step_callback(self, img_shape, save_per_step):
-        """Optimizer member function. Higher order function called from main.py"""
+        """Optimizer member function. Higher order function called from main.py. If no step image to be saved, set
+        save_per_step to less than 1."""
 
         step_folder = "./step_folder/"
         def helper(image):
+            if save_per_step < 1:
+                return
+
             if self.step % save_per_step == 0:
                 image = np.reshape(image, img_shape)
                 image = utils.img_postprocess(image)
