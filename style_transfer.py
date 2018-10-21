@@ -107,19 +107,19 @@ class StyleTransfer():
             print("cont_loss_list: {}".format(cont_loss_list))
             #print("gen_cont_act: {}".format(gen_cont_act[self.cont_layers[0]]))
             #print("cont_act: {}".format(cont_act[self.cont_layers[0]]))
-            print("gen_styl_act")
+            #print("gen_styl_act")
             #[print(l, np.sum(gen_styl_act[l]), np.sum(gen_styl_act[l]*0.2)) for l in self.styl_layers]
             #[print(l, np.sum(styl_act[l]), np.sum(styl[l])*0.2) for l in styl_layers]
-            for l in self.styl_layers:
-                print("Layer: {}".format(l))
-                a = np.sum(gen_styl_act[l])
-                b = np.sum(styl_act[l])
-                print(a-b)
-            print()
-            for l in self.cont_layers:
-                print("Layer: {}".format(l))
-                print(cont_loss_list[0])
-            self.step += 1
+            #for l in self.styl_layers:
+            #    print("Layer: {}".format(l))
+            #    a = np.sum(gen_styl_act[l])
+            #    b = np.sum(styl_act[l])
+            #    print(a-b)
+            #print()
+            #for l in self.cont_layers:
+            #    print("Layer: {}".format(l))
+            #    print(cont_loss_list[0])
+            #self.step += 1
         return helper
 
 
