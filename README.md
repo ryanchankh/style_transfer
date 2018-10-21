@@ -26,6 +26,8 @@ To run the model, run in command line
 ```
 python3 main.py
 ```
+#### Folders
+Create `..\style_transfer\gen_img\` and `..\step_folder\`. Or else it will raise errors when generating results. 
 
 
 ## Model Structure and the Flow of Information
