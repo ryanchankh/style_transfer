@@ -13,12 +13,13 @@ import utils
 #############
 
 # image paths
-styl_path = './images/style/shipwreck.jpg'
+styl_path = './images/style/starry_night.jpg'
 cont_path = './images/content/tubingen.jpg'
 folder = "./gen_img/"
 
 # hyper-parameters
 img_shape = utils.optimal_dimension(cont_path, square=False) 	# [batch, width, height, channels]
+img_shape = (1, 224, 224, 3)
 alpha = 1e-6                    								# content weight alpha
 beta = 1                        								# style weight beta
 num_steps = 1000               									# training iterations
@@ -27,6 +28,7 @@ save_per_step = -1              								# save image per this number of step
 # content and style layers used in style transfer
 cont_layers = ["relu4_2"] # for matlab vgg
 styl_layers = ["relu1_1", "relu2_1", "relu3_1", "relu4_1", "relu5_1"]
+
 
 # weights on each style layer
 styl_weights = {"relu1_1": 0.2, "relu1_2": 0.2, "pool1": 0,
