@@ -2,9 +2,13 @@
 ###### Ryan Chan (With great help from Dylan Paiton) , Last Updated: 20 October 2018
 
 ## Motivation
-Layers in neural network contains useful information. For example, one can use convolutional operation to reduce the dimension of the data, while embedding common information between each layer. Formerly known actviation maps, they contain useful presentations that can be processed for further purpose. Artistic Style Transfer is one of many examples that utilizes actvations in convolutional neural networks. This project sets to explore activation maps further. 
+Layers in neural network contains useful information. For example, one can use convolutional operation to reduce the dimension of the data, while embedding common information between each layer. Formerly known actviation maps, they contain useful presentations that can be processed for further purpose. Artistic Style Transfer is one of many examples that utilizes actvations in convolutional neural networks (VGG19) (Simonyan, K., & Zisserman, A. 2014). This project sets to explore activation maps further. 
 
 ## Instruction for Testing and Producing Results
+#### VGG weights
+First download vgg weights from <a href="https://drive.google.com/open?id=1PfQao0YIwDuICd_OFG8o1k0whwWGiCF7">here</a>. Put this in `/style_transfer/vgg/`. No change of file name needed.<br>
+
+#### Model Options
 All options for training are located in `main.py`. The options you can fine tue are:
 
 1. Dimension of the image
@@ -27,12 +31,16 @@ To run the model, run `python3 main.py`.
 
 ### Generating result
 1. Each iteration, we pass in the random image to obtain the same layers of activation maps we chose for content and style.
-2. We then compute the content loss, which is the mean square error between the activation maps of the content image and that of the sythesized image.
-3. Similarily, the style loss is the mean square error between the gram matrix of the activation maps of the content image and that of the sythesized image. Gram matrix can be interpreted as computing the covariance between each pixel. 
-4. The content loss and style loss is then added up together, becoming the total loss. Our objective then is the minimize this loss. 
-5. At each iteration, the random image is updated such that it converges to a synthesized image. 
 
-## Replication of Figures
+2. We then compute the content loss, which is the mean square error between the activation maps of the content image and that of the sythesized image. Content loss function can be described by the following equation: $$ L_{\text{content}} = \frac{1}{2}(\sum_{i, j} F_{ij}^l - P_{ij}^l)^2$$, where $F^l$ is the activation map at layer $l$ of the generated image. And $P^l$ is that of the original content image. 
+
+3. Similarily, the style loss is the mean square error between the gram matrix of the activation maps of the content image and that of the sythesized image. Gram matrix can be interpreted as computing the covariance between each pixel. Each layer's style loss is multipled by a style loss weight such that style loss from each layer is averaged out. Style loss can be described by the following equation: $$L_{\text{style}} = \frac{1}{4M_l^2N_l^2}\sum_{i,j}w_l \cdot (G(F^l)_{ij} - G(P^l)_{ij})^2$$, where $G(\cdot)$ is the function that computes the grammain, $M^l$ is the height times width of the activation map at layer $l$, and $N^l$ is the number of channels of the activation map at layer $l$. 
+
+5. The content loss and style loss are multipled by their respective tradeoffs, is then added up together, becoming the total loss. Our objective then is the minimize the following loss function: $$L_{\text{total}} = \alpha \cdot L_{\text{content}} + \beta \cdot L_{\text{style}}$$
+
+6. At each iteration, the random image is updated such that it converges to a synthesized image. Our model uses L-BFGS algorithm to mimize the loss. 
+
+## Replication of Figures in Paper
 ### Figure 1 - Image Representations in a Convolutional Neural Network
 
 **Content Reconstruction.**
@@ -74,13 +82,11 @@ A subtle difference between Leon's original implementation and this version is t
 **Losses and differences.** The current style transfer model utilizes mean square error, which computes the difference between pixel values from the content or style image and the synthsized image. From a mathematical point of view, this seems logical and reasonable. But, a difference in pixel value may not necessarily imply a difference in content or style. For instance, if we were to create a synthsized image that is more invariant to the position of objects in our synthesized image, calculate the exact difference in pixel at each coordinate would not be sensible. In other words, the definition of loss when considering objects may require a much more extensive function than computing losses. 
 
 ## Further Readings
-1. Jing et al. 2018. Neural Style Transfer: A Review. <br>
-https://arxiv.org/pdf/1705.04058.pdf <br>
-https://github.com/ycjing/Neural-Style-Transfer-Papers <br> 
+1. Jing et al. 2018. Neural Style Transfer: A Review. <a href="https://arxiv.org/pdf/1705.04058.pdf">Link to Paper</a> <a href="https://github.com/ycjing/Neural-Style-Transfer-Papers">Link to Github</a> <br>
 This github repository and paper provides a general overview of other posibilities of style transfer. There are now different branches of style transfer, while some focuses more on keeping the content and some focuses on keeping the style. There are also improvements in different aspects, such as training speed, or time-varying style transfers. 
 
-2. Johnson et at. 2016. Perceptual Loss for Real-Time Style Transfer and Super-Resolution. <br>
-https://arxiv.org/pdf/1603.08155.pdf<br>
+2. Johnson et at. 2016. Perceptual Loss for Real-Time Style Transfer and Super-Resolution. 
+<a href="https://arxiv.org/pdf/1603.08155.pdf">Link to Paper</a> <br>
 One potential change to Leon's model is to use the configurations that Johnson used in this paper. The similar result can be reproduced. 
 
 ## Other Github references
@@ -92,20 +98,20 @@ Throughout this project, I visited a few other implementations that provided me 
 4. https://github.com/lengstrom/fast-style-transfer
 5. https://github.com/fzliu/style-transfer
 6. https://github.com/machrisaa/tensorflow-vgg
-
+7. https://github.com/anishathalye/neural-style
 
 As mentioned earlier, there is a slight difference in my implementation compared to the original implementation. I was trying to find one that exactly follows the original implementation, but most of them either also changes some settings on their own or implementations concurrently with other versions of style transfer.
 
 
 ## Paper References
-Gatys, Leon A., Alexander S. Ecker, and Matthias Bethge. 2016. “Image Style Transfer Using Convolutional Neural Networks.” 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR). doi:10.1109/cvpr.2016.265.
+Gatys, L. A., Ecker, A. S., & Bethge, M. (2015). A neural algorithm of artistic style. arXiv preprint arXiv:1508.06576.
 
-Gatys, L., Ecker, A. and Bethge, M. 2016. "A Neural Algorithm of Artistic Style". Journal of Vision, 16(12), p.326.
+Simonyan, K., & Zisserman, A. (2014). Very deep convolutional networks for large-scale image recognition. arXiv preprint arXiv:1409.1556.
+
+Gatys, L. A., Ecker, A. S., & Bethge, M. (2016). Image style transfer using convolutional neural networks. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (pp. 2414-2423).
+
 
 ## Personal Note
-#### Motivation
 The artistic and imaginative side of human is known to be one of the most challenging perspective of life to model. Due to its free form and huamnly-cultivated experience, art is often appreciated not only because of its visual apperance, but also the history and motivations of the artist. In this project, I attempt to answer this question: "If we were to create a model that creates art, how would it do it, and what separates that from human life?" 
 
 This is my first project look in-depth into an academic paper and attempt to implement the model from scratch. Because it was widely used to illustrate what neural networks can do, artistic style transfer remains as one of the most interesting beginner projects. I am doing this to cultivate my extensive and critical thinking sills, and also understand the model thoroughly, to the extent where I have no doubt if asked to explain how it works from zero to a hundred. 
-
-#### Conclusion
