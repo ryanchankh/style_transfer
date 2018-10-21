@@ -2,8 +2,7 @@ import numpy as np
 import tensorflow as tf
 
 import utils
-from vgg.vgg import VGG19
-#from vgg.vgg_mat import VGG19
+from vgg.vgg_mat import VGG19
 
 class StyleTransfer():
     """Style Transfer Model.
