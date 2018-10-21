@@ -1,26 +1,22 @@
 # Style Transfer using Convolutional Neural Network
-###### Ryan Chan (With great help from Dylan Paiton) 
-###### Last Updated: 17 October 2018
-
+###### Ryan Chan (With great help from Dylan Paiton) , Last Updated: 20 October 2018
 
 ## Motivation
-#### Research Motivation
 Layers in neural network contains useful information. For example, one can use convolutional operation to reduce the dimension of the data, while embedding common information between each layer. Formerly known actviation maps, they contain useful presentations that can be processed for further purpose. Artistic Style Transfer is one of many examples that utilizes actvations in convolutional neural networks. This project sets to explore activation maps further. 
 
-#### Personal Motivation
-The artistic and imaginative side of human is known to be one of the most challenging perspective of life to model. Due to its free form and huamnly-cultivated experience, art is often appreciated not only because of its visual apperance, but also the history and motivations of the artist. In this project, I attempt to answer this question: "If we were to create a model that creates art, how would it do it, and what separates that from human life?" 
+## Instruction for Testing and Producing Results
+1. 
 
-This is my first project look in-depth into an academic paper and attempt to implement the model from scratch. Because it was widely used to illustrate what neural networks can do, artistic style transfer remains as one of the most interesting beginner projects. I am doing this to cultivate my extensive and critical thinking sills, and also understand the model thoroughly, to the extent where I have no doubt if asked to explain how it works from zero to a hundred. 
 
 ## Model Structure and the Flow of Information
-#### Preprocess
+### Preprocess
 1. style image is rescaled to be the same size as content image. 
 2. When images are loaded, mean pixel values are subtracted from them such that their pixel values are centered at 0. This is due to the properties of the weights in our VGG Network, and the use of gram matrix requires values to be centered at 0. 
 3. Both image are passed into the VGG network, and activation maps from specific layers are extracted. 
 4. For activation maps from style image, we pre-compute each layer's gram matrix.
 5. A random image is generated, ready to be synthesized updated at each iteration. This is our only variable that is trained. 
 
-#### Generating result
+### Generating result
 1. Each iteration, we pass in the random image to obtain the same layers of activation maps we chose for content and style.
 2. We then compute the content loss, which is the mean square error between the activation maps of the content image and that of the sythesized image.
 3. Similarily, the style loss is the mean square error between the gram matrix of the activation maps of the content image and that of the sythesized image. Gram matrix can be interpreted as computing the covariance between each pixel. 
@@ -57,6 +53,9 @@ Style Layers: `conv4_2`<br>
 |<img src="images/figures/fig2/femme_nue_assise.jpg" alt="fig1_cont1">|<img src="images/style/assise.jpg">|
 |<img src="images/figures/fig2/composition.jpg" alt="fig1_cont1">|<img src="images/style/composition.jpg">|
 
+#### Difference from original paper
+A subtle difference between Leon's original implementation and this version is that the trade-off used to create the results are different. In the original paper, `alpha / beta  = 1e-4`. Yet, I was unable to create the results with that loss trade-off. Hence, the figures about uses a `alpha / beta = 1e-6` trade-off. I was unable to find where the difference in implementation of model is. 
+
 
 ## Future Work
 **Definition of Representation.** One advantanges of using neural networks on images is that there already exist perhaps the most useful and direct way to represent an image using numbers - pixel values. But this representation is not necessarily the only way to represent visual content. If there exist a different kind of "embedding" that encodes objects or relationship between pixels in a different way, content and style representation might change the way style transfer model defines the relationship between objects, or even color. 
@@ -73,12 +72,31 @@ This github repository and paper provides a general overview of other posibiliti
 
 2. Johnson et at. 2016. Perceptual Loss for Real-Time Style Transfer and Super-Resolution. <br>
 https://arxiv.org/pdf/1603.08155.pdf<br>
-I tried out certain layers chosen from this paper. And the results did not vary too much from the original paper. 
+One potential change to Leon's model is to use the configurations that Johnson used in this paper. The similar result can be reproduced. 
 
- 
+## Other Github references
+Throughout this project, I visited a few other implementations that provided me great insight to how to implement the style transfer model in a more efficient and neat way. The following is a list that I referenced. 
+
+1. https://github.com/hnarayanan/artistic-style-transfer
+2. https://github.com/hwalsuklee/tensorflow-style-transfer
+3. https://github.com/jcjohnson/neural-style
+4. https://github.com/lengstrom/fast-style-transfer
+5. https://github.com/fzliu/style-transfer
+6. https://github.com/machrisaa/tensorflow-vgg
 
 
-## References
+As mentioned earlier, there is a slight difference in my implementation compared to the original implementation. I was trying to find one that exactly follows the original implementation, but most of them either also changes some settings on their own or implementations concurrently with other versions of style transfer.
+
+
+## Paper References
 Gatys, Leon A., Alexander S. Ecker, and Matthias Bethge. 2016. “Image Style Transfer Using Convolutional Neural Networks.” 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR). doi:10.1109/cvpr.2016.265.
 
-Gatys, L., Ecker, A. and Bethge, M. (2016). A Neural Algorithm of Artistic Style. Journal of Vision, 16(12), p.326.
+Gatys, L., Ecker, A. and Bethge, M. 2016. "A Neural Algorithm of Artistic Style". Journal of Vision, 16(12), p.326.
+
+## Personal Note
+#### Motivation
+The artistic and imaginative side of human is known to be one of the most challenging perspective of life to model. Due to its free form and huamnly-cultivated experience, art is often appreciated not only because of its visual apperance, but also the history and motivations of the artist. In this project, I attempt to answer this question: "If we were to create a model that creates art, how would it do it, and what separates that from human life?" 
+
+This is my first project look in-depth into an academic paper and attempt to implement the model from scratch. Because it was widely used to illustrate what neural networks can do, artistic style transfer remains as one of the most interesting beginner projects. I am doing this to cultivate my extensive and critical thinking sills, and also understand the model thoroughly, to the extent where I have no doubt if asked to explain how it works from zero to a hundred. 
+
+#### Conclusion
