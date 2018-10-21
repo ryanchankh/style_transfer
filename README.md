@@ -2,32 +2,36 @@
 ###### Ryan Chan (With great help from Dylan Paiton) , Last Updated: 20 October 2018
 
 ## Motivation
-Layers in neural network contains useful information. For example, one can use convolutional operation to reduce the dimension of the data, while embedding common information between each layer. Formerly known actviation maps, they contain useful presentations that can be processed for further purpose. Artistic Style Transfer is one of many examples that utilizes actvations in convolutional neural networks (VGG19) (Simonyan, K., & Zisserman, A. 2014). This project sets to explore activation maps further. 
+Layers in neural network contains useful information. For example, one can use convolutional operation to reduce the dimension of the data, while embedding common information between each layer. Formerly known actviation maps, they contain useful presentations that can be processed for further purpose. Artistic Style Transfer is one of many examples that utilizes actvations in convolutional neural networks (VGG19) (Simonyan, K., & Zisserman, A. 2014) to produce useful results. This project sets to explore activation maps further. 
 
 ## Instruction for Testing and Producing Results
 #### VGG weights
 First download vgg weights from <a href="https://drive.google.com/open?id=1PfQao0YIwDuICd_OFG8o1k0whwWGiCF7">here</a>. Put this in `/style_transfer/vgg/`. No change of file name needed.<br>
 
 #### Model Options
-All options for training are located in `main.py`. The options you can fine tue are:
+All options for training are located in `main.py`. The options you can fine tune are:
 
 1. Dimension of the image
 2. Layers for the style and content image activation maps
 3. Weights for each layer
-4. Trade-off between style and content. `alpha` for content and `beta` for style. 
+4. Trade-off between style and content (`alpha` for content and `beta` for style)
 5. File path for content and style image
-6. Initial image. (content image, style image, white image, or random image)
-7. Save an image every some step. 
+6. Initial image (content image, style image, white image, or random image)
+7. Number of steps between each image save (`save_per_step = -1` if no saving wanted)
 
-To run the model, run `python3 main.py`. 
+To run the model, run in command line
+
+```
+python3 main.py
+```
 
 ## Model Structure and the Flow of Information
 ### Preprocess
 1. style image is rescaled to be the same size as content image. 
-2. When images are loaded and turned into `(height, width, channel)` array, mean pixel values are subtracted from them such that their pixel values are centered at 0. This is due to the properties of the weights in our VGG Network, and the use of gram matrix requires values to be centered at 0. 
+2. When images are loaded and turned into `(height, width, channel)` array, mean pixel values are subtracted from them such that their pixel values are centered at 0. This is due to the properties of the weights in our VGG Network, and computing the gram matrix requires values to be centered at 0. 
 3. Both image are passed into the VGG network, and activation maps from specific layers are extracted. 
 4. For activation maps from style image, we pre-compute each layer's gram matrix.
-5. A random image is generated, ready to be synthesized updated at each iteration. This is our only variable that is trained. 
+5. A random image is generated, ready to be updated at each iteration. This is our only variable that is being udpated. 
 
 ### Generating result
 1. Each iteration, we pass in the random image to obtain the same layers of activation maps we chose for content and style.
@@ -48,20 +52,22 @@ The following figures are created with `alpha = 1, beta = 0`.
 
 |<img src="images/figures/fig1/cont1.jpg" alt="fig1_cont1">|<img src="images/figures/fig1/cont2.jpg" alt="fig1_cont2">|<img src="images/figures/fig1/cont3.jpg" alt="fig1_cont3">|<img src="images/figures/fig1/cont4.jpg" alt="fig1_cont4">|<img src="images/figures/fig1/cont5.jpg" alt="fig1_cont5">|
 |:---:|:---:|:---:|:---:|:---:|
-|`conv1_1`|`conv2_1`|`conv3_1`|`conv4_1`|`conv5_1`|
+|`relu1_1`|`relu2_1 `|`relu3_1`|`relu4_1 `|`relu5_1`|
 
 **Style Reconstruction.**
 The following figures are created with `alpha = 0, beta = 1`.
 
 |<img src="images/figures/fig1/styl1.jpg" alt="fig1_styl1">|<img src="images/figures/fig1/styl2.jpg" alt="fig1_styl2">|<img src="images/figures/fig1/styl3.jpg" alt="fig1_styl3">|<img src="images/figures/fig1/styl4.jpg" alt="fig1_styl4">|<img src="images/figures/fig1/styl5.jpg" alt="fig1_styl5">|
 |:---:|:---:|:---:|:---:|:---:|
-|`conv1_1`|`conv1_1`<br>`conv2_1`|`conv1_1`<br>`conv2_1`<br>`conv3_1`|`conv1_1`<br>`conv2_1`<br>`conv3_1`<br>`conv4_1`|`conv1_1`<br>`conv2_1`<br>`conv3_1`<br>`conv4_1`<br>`conv5_1`|
+|`relu1_1`|`relu1_1`<br>`relu2_1`|`relu1_1`<br>`relu2_1`<br>`relu3_1`|`relu1_1`<br>`relu2_1`<br>`relu3_1`<br>`relu4_1`|`relu1_1`<br>`relu2_1`<br>`relu3_1`<br>`relu4_1`<br>`relu5_1`|
 
 ### Figure 3 - Well-known Artwork examples
 The following figures are created with: <br>
-Weights:  `alpha = 1e-6, beta = 1` <br>
-Content Layers: `conv1_1, conv2_1, conv3_1, conv4_1, conv5_1`<br>
-Style Layers: `conv4_2`<br>
+Loss Weights: `alpha = 1e-6, beta = 1` <br>
+Style Weight: `relu1_1 = 0.2 , relu2_1 = 0.2, relu3_1 = 0.2, relu4_1 = 0.2, relu5_1 = 0.2` <br>
+Style Layers: `relu1_1, relu2_1, relu3_1, relu4_1, relu5_1`<br>
+Content Layers: `relu4_2 = 1`<br>
+Content Weight: 
 
 |<img src="images/figures/fig2/shipwreck.jpg" alt="fig1_cont1">|<img src="images/style/shipwreck.jpg">|
 |:---:|:---:|
