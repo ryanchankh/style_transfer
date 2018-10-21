@@ -46,7 +46,7 @@ class StyleTransfer():
 
             with tf.name_scope("activitiy") as scope:
                 self.styl_act = self.vgg.build(self.styl_img).layer_dict(self.styl_layers)
-                self.styl_gram = {l: self._gram(self.styl_act[l] / tf.reduce_mean(self.styl_act[l])) for l in self.styl_layers}
+                self.styl_gram = {l: self._gram(self.styl_act[l]) for l in self.styl_layers}
                 self.cont_act = self.vgg.build(self.cont_img).layer_dict(self.cont_layers)
 
                 img_model = self.vgg.build(self.image)
