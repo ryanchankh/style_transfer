@@ -5,13 +5,22 @@
 Layers in neural network contains useful information. For example, one can use convolutional operation to reduce the dimension of the data, while embedding common information between each layer. Formerly known actviation maps, they contain useful presentations that can be processed for further purpose. Artistic Style Transfer is one of many examples that utilizes actvations in convolutional neural networks. This project sets to explore activation maps further. 
 
 ## Instruction for Testing and Producing Results
-1. 
+All options for training are located in `main.py`. The options you can fine tue are:
 
+1. Dimension of the image
+2. Layers for the style and content image activation maps
+3. Weights for each layer
+4. Trade-off between style and content. `alpha` for content and `beta` for style. 
+5. File path for content and style image
+6. Initial image. (content image, style image, white image, or random image)
+7. Save an image every some step. 
+
+To run the model, run `python3 main.py`. 
 
 ## Model Structure and the Flow of Information
 ### Preprocess
 1. style image is rescaled to be the same size as content image. 
-2. When images are loaded, mean pixel values are subtracted from them such that their pixel values are centered at 0. This is due to the properties of the weights in our VGG Network, and the use of gram matrix requires values to be centered at 0. 
+2. When images are loaded and turned into `(height, width, channel)` array, mean pixel values are subtracted from them such that their pixel values are centered at 0. This is due to the properties of the weights in our VGG Network, and the use of gram matrix requires values to be centered at 0. 
 3. Both image are passed into the VGG network, and activation maps from specific layers are extracted. 
 4. For activation maps from style image, we pre-compute each layer's gram matrix.
 5. A random image is generated, ready to be synthesized updated at each iteration. This is our only variable that is trained. 
