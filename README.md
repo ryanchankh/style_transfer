@@ -70,7 +70,6 @@ Loss Weights: `alpha = 1e-6, beta = 1` <br>
 Style Weight: `relu1_1 = 0.2 , relu2_1 = 0.2, relu3_1 = 0.2, relu4_1 = 0.2, relu5_1 = 0.2` <br>
 Style Layers: `relu1_1, relu2_1, relu3_1, relu4_1, relu5_1`<br>
 Content Layers: `relu4_2 = 1`<br>
-Content Weight: 
 
 |<img src="images/figures/fig2/shipwreck.jpg" alt="fig1_cont1">|<img src="images/style/shipwreck.jpg">|
 |:---:|:---:|
