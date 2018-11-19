@@ -38,13 +38,13 @@ python3 main.py
 ### Generating result
 1. Each iteration, we pass in the random image to obtain the same layers of activation maps we chose for content and style.
 
-2. We then compute the content loss, which is the mean squared error between the activation maps of the content image and that of the synthesized image. 
+2. We then compute the content loss, which is the mean square error between the activation maps of the content image and that of the sythesized image. Content loss function can be described by the following equation: $$ L_{\text{content}} = \frac{1}{2}(\sum_{i, j} w^{(c)}l \cdot (F{ij}^l - P_{ij}^l))^2$$, where $F^l$ is the activation map at layer $l$ of the generated image, and $P^l$ is that of the original content image. $ w^{(c)}_l $ is the weight of each layer.
 
-3. Similarily, the style loss is the mean squared error between the gram matrix of the activation maps of the content image and that of the synthesized image. The Gram matrix can be interpreted as computing the covariance between each pixel. Each layer's style loss is multipled by a style loss weight such that style loss from each layer is averaged out. 
+3. Similarily, the style loss is the mean square error between the gram matrix of the activation maps of the content image and that of the sythesized image. Gram matrix can be interpreted as computing the covariance between each pixel. Each layer's style loss is multipled by a style loss weight such that style loss from each layer is averaged out. Style loss can be described by the following equation: $$L_{\text{style}} = \frac{1}{4M_l^2N_l^2}\sum_{i,j}w^{(s)}l \cdot (G(F^l){ij} - G(P^l)_{ij})^2$$, where $G(\cdot)$ is the function that computes the grammain, $M^l$ is the height times width of the activation map at layer $l$, and $N^l$ is the number of channels of the activation map at layer $l$. $ w^{(s)}_l $ is the weight of each layer.
 
-5. The content loss and style loss are multipled by their respective tradeoffs, is then added up together, becoming the total loss. 
+4. The content loss and style loss are multipled by their respective tradeoffs, is then added up together, becoming the total loss. Our objective then is the minimize the following loss function: $$L_{\text{total}} = \alpha \cdot L_{\text{content}} + \beta \cdot L_{\text{style}}$$, where $\alpha$ is the weight trade-off of the content loss, and $\beta$ is the trade-off of the style loss.
 
-6. At each iteration, the random image is updated such that it converges to a synthesized image. Our model uses L-BFGS algorithm to mimize the loss. 
+5. At each iteration, the random image is updated such that it converges to a synthesized image. Our model uses L-BFGS algorithm to mimize the loss. 
 
 
 ## Replication of Figures in Paper
