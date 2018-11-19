@@ -3,7 +3,7 @@
 
 
 ## Motivation
-Layers in neural network contains useful information. For example, one can use convolutional operation to reduce the dimension of the data, while embedding common information between each layer. Formerly known actviation maps, they contain useful presentations that can be processed for further purpose. Artistic Style Transfer is one of many examples that utilizes actvations in convolutional neural networks (VGG19) (Simonyan, K., & Zisserman, A. 2014) to produce useful results. This project sets to explore activation maps further. 
+Layers in neural network contain useful information. For example, one can use the convolutional operation to reduce the dimension of the data, while summarizing information from previous layers and passing on to later layers. Artistic Style Transfer is one of many examples that utilizes actvations in convolutional neural networks (VGG19) (Simonyan, K., & Zisserman, A. 2014) to produce useful results. This project sets to explore activation maps further. 
 
 
 ## Instruction for Testing and Producing Results
@@ -38,9 +38,9 @@ python3 main.py
 ### Generating result
 1. Each iteration, we pass in the random image to obtain the same layers of activation maps we chose for content and style.
 
-2. We then compute the content loss, which is the mean square error between the activation maps of the content image and that of the sythesized image. 
+2. We then compute the content loss, which is the mean squared error between the activation maps of the content image and that of the synthesized image. 
 
-3. Similarily, the style loss is the mean square error between the gram matrix of the activation maps of the content image and that of the sythesized image. Gram matrix can be interpreted as computing the covariance between each pixel. Each layer's style loss is multipled by a style loss weight such that style loss from each layer is averaged out. 
+3. Similarily, the style loss is the mean squared error between the gram matrix of the activation maps of the content image and that of the synthesized image. The Gram matrix can be interpreted as computing the covariance between each pixel. Each layer's style loss is multipled by a style loss weight such that style loss from each layer is averaged out. 
 
 5. The content loss and style loss are multipled by their respective tradeoffs, is then added up together, becoming the total loss. 
 
@@ -79,13 +79,15 @@ Content Layers: `relu4_2 = 1`<br>
 |<img src="images/figures/fig2/composition.jpg" alt="fig1_cont1">|<img src="images/style/composition.jpg">|
 
 #### Difference from original paper
-A subtle difference between Leon's original implementation and this version is that the trade-off used to create the results are different. In the original paper, `alpha / beta  = 1e-4`. Yet, I was unable to create the results with that loss trade-off. Hence, the figures about uses a `alpha / beta = 1e-6` trade-off. I was unable to find where the difference in implementation of model is. 
+A subtle difference between Leon's original implementation and this version is that the trade-off used to create the results are different. In the original paper, `alpha / beta  = 1e-4`. Yet, I was unable to create the results with that loss trade-off. Hence, the figures about uses a `alpha / beta = 1e-6` trade-off. I was unable to find where the difference in implementations of the models is. 
 
 
 ## Future Work
-**Definition of Representation.** One advantanges of using neural networks on images is that there already exist perhaps the most useful and direct way to represent an image using numbers - pixel values. But this representation is not necessarily the only way to represent visual content. If there exist a different kind of "embedding" that encodes objects or relationship between pixels in a different way, content and style representation might change the way style transfer model defines the relationship between objects, or even color. 
+**Definition of Representation.** The most common way of turning an image into a numerical representatio is using pixel values. Each pixel value is a one-dimensional vector for a grayscale image, or three- or four-dimensional vector for an color image. Hence, an image that is 500 by 500 can be represented by a 500 by 500 array. But this representation is not necessarily the only way to represent visual content. If there exist a different kind of "embedding" that encodes objects or relationship between pixels in a different way, content and style representation might change the way style transfer model defines the relationship between objects, or even color. 
 
-**CNNs to Other Types of Neural Nets.** One inspiration of Convolutional Neural Networks is the hierachical structure of simple cells and complex cells in the human visual cortex. Layer by layer, using convolution operation, an artifical neuron serves as a computing unit that summaries information from previous layer and compresses into a smaller space, which is then passsed onto the later layers. This type of model is one of many ways of compressing into a more meaningful and less redundant representation. Other models for compression includes autoencoders, which requires information to be passed down a smaller dimension and projected into a larger dimension again. Compression problems might shed insights on how information is embedded efficiently. 
+**CNNs to Other Types of Neural Nets.** One inspiration of Convolutional Neural Networks is the hierachical structure of the human visual cortex. Layer by layer, using convolution operation, an artifical neuron serves as a computing unit that summarizes information from previous layers and compresses into a smaller space, which is then passsed onto the later layers. This type of model is one of many ways of compressing into a more meaningful and less redundant representation. There are plenty of other convolutional network architecture, such as ResNet500. Following the same line of reasoning, it is very likely that other types of CNNs can perform style transfer, perhaps with better performance and more interesting results. 
+
+***Autoencoders.*** There are many ways to compress images. One way is making use of natural scene statistics and reducing statistical redundancy in images. Autoencoders, which require information to be passed down a smaller dimension and projected into a larger dimension again, can be modeled based on principals of natural scene statistics and entropy. Compression problems might shed insights on how information is embedded efficiently. And a by-product of compressed information may create meaningful results when used for style transfer. 
 
 **Losses and differences.** The current style transfer model utilizes mean square error, which computes the difference between pixel values from the content or style image and the synthsized image. From a mathematical point of view, this seems logical and reasonable. But, a difference in pixel value may not necessarily imply a difference in content or style. For instance, if we were to create a synthsized image that is more invariant to the position of objects in our synthesized image, calculate the exact difference in pixel at each coordinate would not be sensible. In other words, the definition of loss when considering objects may require a much more extensive function than computing losses. 
 
